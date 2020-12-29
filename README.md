@@ -1,2 +1,2 @@
 # fantasy_postseason_challenge
-App for Fantasy Postseason Challenges
+App for fantasy sports postseason challenges
