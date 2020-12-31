@@ -2,13 +2,13 @@ from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
 from flask import current_app as app
-from flask_pymongo import PyMongo
+
+from .account import Account
+
 from bson.objectid import ObjectId
 
 from werkzeug.security import check_password_hash, generate_password_hash
-
-mongo = PyMongo(app)
-
+    
 @app.route("/")
 def hello():
     print("Handling request to home page.")
@@ -20,17 +20,15 @@ def register():
         username = request.form["username"]
         password = request.form["password"]
 
-        accounts = mongo.db.test_accounts
-
         e = None
         if not (username and password):
             e = "username and password required"
-        elif accounts.find_one({"username" : username}):
+        elif Account.objects(username=username).first():
             e = f"Username: \"{username}\" already exists"
         
         if not e:
-            new_user = {'username' : username, 'password_hash' : generate_password_hash(password)}
-            post_id = accounts.insert_one(new_user).inserted_id
+            new_user = Account(username=username, password_hash=generate_password_hash(password))
+            new_user.save()
             return redirect(url_for("login"))
         else:
             flash(e)
@@ -43,20 +41,19 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
 
-        accounts = mongo.db.test_accounts
-        account = accounts.find_one({"username" : username})
+        account = Account.objects(username=username).first()
         
         e = None
         if not (username and password):
             e = "username and password required"
         elif not account:
             e = f"Username: \"{username}\" not found"
-        elif not check_password_hash(account["password_hash"], password):
+        elif not check_password_hash(account.password_hash, password):
             e = "Incorrect password"
 
         if not e:
             session.clear()
-            session["user_id"] = str(account["_id"])
+            session["user_id"] = str(account.id)
             return redirect(url_for("hello"))
         else:
             flash(e)
