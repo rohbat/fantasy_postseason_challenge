@@ -6,8 +6,6 @@ from flask_login import login_user, login_required, logout_user
 
 from .account import User
 
-from bson.objectid import ObjectId
-
 from werkzeug.security import check_password_hash, generate_password_hash
     
 @app.route("/")
@@ -73,20 +71,3 @@ def logout():
     logout_user()
     flash("Logged out")
     return redirect(url_for("hello"))
-
-# this is bad now right?
-'''
-@app.route("/check_user_id")
-def check_user_id():
-    accounts = mongo.db.test_accounts
-
-    if "user_id" in session:
-        account = accounts.find_one({"_id" : ObjectId(session["user_id"])})
-        
-        if not account:
-            return "No account" + session["user_id"]
-        else:
-            return account['username']
-    else:
-        return "No session"
-'''
