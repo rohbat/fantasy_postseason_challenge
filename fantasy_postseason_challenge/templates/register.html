@@ -1,0 +1,26 @@
+<html>
+	<head>
+		<title>Register</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    	<link href="static/bootstrap.min.css" rel="stylesheet" media="screen">
+	</head>
+	<body>
+		<h1>Register</h1>
+		
+		<form action="" method="post">
+			<label for="username">username: </label><br>
+			<input type="text" id="username" name="username"><br>
+			<label for="password">password: </label><br>
+			<input type="text" id="password" name="password"><br>
+			<input type="submit" id="submit" name="submit">
+		</form>
+
+		{% with messages = get_flashed_messages() %}
+			{% if messages %}
+				{% for message in messages %}
+					{{message}}<br>
+				{% endfor %}
+			{% endif %}
+		{% endwith %}
+	</body>
+</html>
