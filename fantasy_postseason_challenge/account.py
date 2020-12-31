@@ -1,6 +1,18 @@
 from .db import db
 
-class Account(db.Document):
+class User(db.Document):
     username = db.StringField(required=True)
     password_hash = db.StringField(required=True)
     leagues = db.ListField()
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return True
+
+    def is_authenticated(self):
+        return True
+
+    def get_id(self):
+        return self.username
