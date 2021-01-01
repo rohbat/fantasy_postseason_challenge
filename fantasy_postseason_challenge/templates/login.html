@@ -14,7 +14,7 @@
             <input type="submit" id="submit" name="submit">
         </form><br>
 
-        <a href="{{url_for('register')}}">register</a><br>
+        <a href="{{url_for('auth.register')}}">register</a><br>
 
         {% with messages = get_flashed_messages() %}
             {% if messages %}
