@@ -1,27 +1,20 @@
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
-from flask import current_app as app
-from flask_login import login_user, login_required, logout_user
+# from flask import current_app as app
+from flask_login import login_user, login_required, logout_user, current_user
 
 from .account import User
 
-from bson.objectid import ObjectId
-
 from werkzeug.security import check_password_hash, generate_password_hash
-    
-@app.route("/")
+
+bp = Blueprint('auth', __name__, url_prefix='/')
+
+@bp.route("/")
 def hello():
-    print("Handling request to home page.")
     return render_template("home.html")
 
-@app.route("/logged_in")
-@login_required
-def logged_in():
-    print("Handling request to logged in home page.")
-    return render_template("logged_in.html")
-
-@app.route("/register", methods=("GET", "POST"))
+@bp.route("/register", methods=("GET", "POST"))
 def register():
     if request.method == "POST":
         username = request.form["username"]
@@ -36,13 +29,13 @@ def register():
         if not e:
             new_user = User(username=username, password_hash=generate_password_hash(password))
             new_user.save()
-            return redirect(url_for("login"))
+            return redirect(url_for("auth.login"))
         else:
             flash(e)
 
     return render_template("register.html")
 
-@app.route("/login", methods=("GET", "POST"))
+@bp.route("/login", methods=("GET", "POST"))
 def login():
     if request.method == "POST":
         username = request.form["username"]
@@ -61,18 +54,18 @@ def login():
         if not e:
             # session.clear()
             login_user(user)
-            return redirect(url_for("logged_in"))
+            return redirect(url_for("dashboard.logged_in"))
         else:
             flash(e)
     
     return render_template("login.html")
 
-@app.route("/logout")
+@bp.route("/logout")
 @login_required
 def logout():
     logout_user()
     flash("Logged out")
-    return redirect(url_for("hello"))
+    return redirect(url_for("auth.hello"))
 
 # this is bad now right?
 '''

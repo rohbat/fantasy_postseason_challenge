@@ -20,12 +20,18 @@ def create_app(test_config=None):
 
     login_manager = LoginManager()
     login_manager.init_app(app)
-    login_manager.login_view = "login"
+    login_manager.login_view = "auth.login"
 
     @login_manager.user_loader
     def load_user(username):
         return User.objects(username=username).first()
 
-    with app.app_context():
-        from . import routes
-        return app
+    # with app.app_context():
+    #     from . import routes
+    #     return app
+
+    from . import auth, dashboard
+    app.register_blueprint(auth.bp)
+    app.register_blueprint(dashboard.bp)
+
+    return app
