@@ -1,0 +1,21 @@
+<html>
+    <head>
+        <title>Logged in!</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="static/bootstrap.min.css" rel="stylesheet" media="screen">
+    </head>
+    <body>
+        <h1>Your leagues</h1>
+        <a href="{{url_for('dashboard.new_league')}}">Create new league</a><br>
+        <a href="{{url_for('dashboard.join_league')}}">Join a league</a><br>
+        <a href="{{url_for('auth.logout')}}">log out</a><br>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    {{message}}<br>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </body>
+</html>
