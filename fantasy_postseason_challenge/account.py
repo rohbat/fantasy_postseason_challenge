@@ -3,7 +3,7 @@ from .db import db
 class User(db.Document):
     username = db.StringField(required=True)
     password_hash = db.StringField(required=True)
-    leagues = db.ListField()
+    memberships = db.ListField()
 
     def is_active(self):
         return True
