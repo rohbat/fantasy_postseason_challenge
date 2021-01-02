@@ -40,13 +40,14 @@ def login():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-
-        user = User.objects(username=username).first()
         
         e = None
         if not (username and password):
             e = "username and password required"
-        elif not user:
+        
+        user = User.objects(username=username).first()
+
+        if not user:
             e = f"Username: \"{username}\" not found"
         elif not check_password_hash(user.password_hash, password):
             e = "Incorrect password"
