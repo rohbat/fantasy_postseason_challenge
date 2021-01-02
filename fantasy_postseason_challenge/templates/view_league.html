@@ -1,0 +1,50 @@
+<html>
+  <head>
+    <title>League</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="{{url_for('static', filename='bootstrap.min.css')}}" rel="stylesheet" media="screen">
+    <style>
+      table, th, td {
+        border: 1px solid black;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>League name here</h1>
+    League id here<br>
+    <a href="{{url_for('dashboard.logged_in_homepage')}}">go back</a><br><br>
+
+    <h3>Phase one</h3>
+    <table style="width:{{score_width*(len(members)+1) + (name_width*len(members))}}px;">
+      <thead>
+        <tr>
+          <th></th>
+          {% for member in members %}
+            <th colspan="2"; style="text-align:center">{{member}}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for i, (position, row) in enumerate(zip(positions, data)) %}
+          <tr>
+            <th>{{position}}</th>
+            {%for col in row%}
+              <td style="background-color:{{col[2]}};color:{{col[3]}};width:{{name_width}}px;">{{col[0]}}</td>
+              <td style="width:{{score_width}}">{{col[1]}}</td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          {{message}}<br>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </body>
+</html>
