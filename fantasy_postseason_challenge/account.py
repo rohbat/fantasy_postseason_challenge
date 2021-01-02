@@ -1,7 +1,7 @@
 from .db import db
 
 class User(db.Document):
-    username = db.StringField(required=True)
+    username = db.StringField(required=True, unique=True)
     password_hash = db.StringField(required=True)
     memberships = db.ListField()
 
