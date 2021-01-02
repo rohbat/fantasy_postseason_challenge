@@ -29,7 +29,8 @@ def register():
         if not e:
             new_user = User(username=username, password_hash=generate_password_hash(password))
             new_user.save()
-            return redirect(url_for("auth.login"))
+            login_user(new_user)
+            return redirect(url_for("dashboard.logged_in_homepage"))
         else:
             flash(e)
 
