@@ -13,7 +13,7 @@
             </tr>
             {% for member in members %}
             <tr>
-              <td>{{ member.league_name }}</td>
+              <td><a href="{{url_for('dashboard.view_league', league_id=member.league_id)}}">{{ member.league_name }}</a></td>
               <td>{{ member.team_name }}</td>
             </tr>
             {% endfor %}
