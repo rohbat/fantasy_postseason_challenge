@@ -6,6 +6,19 @@
     </head>
     <body>
         <h1>Your leagues</h1>
+        <table style="width:50%">
+            <tr>
+              <th>League Name</th>
+              <th>Team Name</th>
+            </tr>
+            {% for member in members %}
+            <tr>
+              <td>{{ member.league_name }}</td>
+              <td>{{ member.team_name }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        <br>
         <a href="{{url_for('dashboard.new_league')}}">Create new league</a><br>
         <a href="{{url_for('dashboard.join_league')}}">Join a league</a><br>
         <a href="{{url_for('auth.logout')}}">log out</a><br>
