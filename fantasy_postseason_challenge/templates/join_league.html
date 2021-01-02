@@ -1,13 +1,18 @@
 <html>
     <head>
-        <title>Logged in!</title>
+        <title>Join League</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="static/bootstrap.min.css" rel="stylesheet" media="screen">
     </head>
     <body>
-        <h1>Logged in!</h1>
-        You are logged in with: {{current_user.username}}!
-        <a href="{{url_for('auth.logout')}}">log out</a><br>
+        <h1>Join League</h1>
+        <form action="" method="post">
+            <label for="league_id">League ID: </label><br>
+            <input type="text" id="league_id" name="league_id"><br>
+            <label for="team_name">Your team name: </label><br>
+            <input type="text" id="team_name" name="team_name"><br>
+            <input type="submit" id="submit" name="submit">
+        </form><br>
 
         {% with messages = get_flashed_messages() %}
             {% if messages %}

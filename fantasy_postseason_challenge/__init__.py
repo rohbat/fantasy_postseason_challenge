@@ -25,11 +25,7 @@ def create_app(test_config=None):
     @login_manager.user_loader
     def load_user(username):
         return User.objects(username=username).first()
-
-    # with app.app_context():
-    #     from . import routes
-    #     return app
-
+        
     from . import auth, dashboard
     app.register_blueprint(auth.bp)
     app.register_blueprint(dashboard.bp)

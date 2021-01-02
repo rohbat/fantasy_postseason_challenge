@@ -11,8 +11,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 bp = Blueprint('auth', __name__, url_prefix='/')
 
 @bp.route("/")
-def hello():
-    return render_template("home.html")
+def welcome():
+    return render_template("welcome.html")
 
 @bp.route("/register", methods=("GET", "POST"))
 def register():
@@ -40,13 +40,14 @@ def login():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-
-        user = User.objects(username=username).first()
         
         e = None
         if not (username and password):
             e = "username and password required"
-        elif not user:
+        
+        user = User.objects(username=username).first()
+
+        if not user:
             e = f"Username: \"{username}\" not found"
         elif not check_password_hash(user.password_hash, password):
             e = "Incorrect password"
@@ -54,7 +55,7 @@ def login():
         if not e:
             # session.clear()
             login_user(user)
-            return redirect(url_for("dashboard.logged_in"))
+            return redirect(url_for("dashboard.logged_in_homepage"))
         else:
             flash(e)
     
@@ -66,4 +67,4 @@ def logout():
     logout_user()
     flash("Logged out")
 
-    return redirect(url_for("auth.hello"))
+    return redirect(url_for("auth.welcome"))

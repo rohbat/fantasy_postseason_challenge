@@ -1,0 +1,32 @@
+<html>
+    <head>
+        <title>New League</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="static/bootstrap.min.css" rel="stylesheet" media="screen">
+    </head>
+    <body>
+        <h1>New League</h1>
+        <form action="" method="post">
+            <label for="league_name">League Name: </label><br>
+            <input type="text" id="league_name" name="league_name"><br>
+            <label for="ruleset">Ruleset: </label><br>
+            <select id="ruleset" name="ruleset">
+                <option value="normal">Normal</option>
+                <option value="half-ppr">Half-PPR</option>
+                <option value="ppr">PPR</option>
+              </select>
+              <br>
+            <label for="team_name">Your team name: </label><br>
+            <input type="text" id="team_name" name="team_name"><br>
+            <input type="submit" id="submit" name="submit">
+        </form><br>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    {{message}}<br>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </body>
+</html>
