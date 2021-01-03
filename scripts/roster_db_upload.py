@@ -39,11 +39,11 @@ def upload_team_roster(chrome_driver, team_abbrev, url_abbrev, team_name):
     for row in rows:
         pos_find = row.find('td', {'data-stat':'pos'})
         if pos_find:
-            pos = pos_find.text
+            pos = pos_find.text.strip()
             
             if pos in positions:
-                name = row.find('td', {'data-stat':'player'}).text
-                games_started_text = row.find('td', {'data-stat':'gs'}).text
+                name = row.find('td', {'data-stat':'player'}).text.strip()
+                games_started_text = row.find('td', {'data-stat':'gs'}).text.strip()
                 games_started = 0
                 if games_started_text:
                     games_started = int(games_started_text)
@@ -68,9 +68,10 @@ def upload_team_roster(chrome_driver, team_abbrev, url_abbrev, team_name):
 
 if __name__ == "__main__":
     config = configparser.ConfigParser()
-    config.read('config.txt')
+    config.read('./config.txt')
     mongo_host = config['DEFAULT']['MONGODB_HOST']
     connect(host=mongo_host)
+    
     options = webdriver.ChromeOptions()
     options.add_argument('headless')
     chrome_driver = webdriver.Chrome(options=options)
