@@ -1,0 +1,25 @@
+<html>
+    <head>
+        <title>Join League</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="static/bootstrap.min.css" rel="stylesheet" media="screen">
+    </head>
+    <body>
+        <h1>Select team</h1>
+
+        <form action="" method="POST" >
+            {% for field in form %}
+                {{field.label}}: {{field}}<br><br>
+            {% endfor %}
+            <input type="submit" value="Submit">
+        </form>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    {{message}}<br>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </body>
+</html>

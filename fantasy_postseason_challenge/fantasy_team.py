@@ -4,14 +4,11 @@ class Player(db.Document):
     name = db.StringField(required=True)
     team = db.StringField(required=True)
     position = db.StringField(required=True)
-    display_name = db.StringField(required=True, default=self.get_display_name())
+    display_name = db.StringField(required=True, default=f'[{team}] {name}')
 
     week_1_avail = db.BooleanField(default=False)
     week_2_avail = db.BooleanField(default=False)
     week_3_avail = db.BooleanField(default=False)
-
-    def get_display_name(self):
-        return '[' + team + '] ' + name 
 
 class FantasyTeam(db.Document):
     QB = db.ReferenceField(Player)

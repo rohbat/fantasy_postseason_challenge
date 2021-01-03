@@ -13,7 +13,8 @@
   <body>
     <h1>League name here</h1>
     League id here<br>
-    <a href="{{url_for('dashboard.logged_in_homepage')}}">go back</a><br><br>
+    <a href="{{url_for('dashboard.logged_in_homepage')}}">go back</a><br>
+    <a href="{{url_for('dashboard.select_team', league_id=league_id)}}" >select your team</a><br>
 
     <h3>Phase one</h3>
     <table style="width:{{score_width*(len(members)+1) + (name_width*len(members))}}px;">
