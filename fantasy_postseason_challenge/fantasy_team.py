@@ -5,6 +5,7 @@ class Player(db.Document):
     team = db.StringField(required=True)
     position = db.StringField(required=True)
     display_name = db.StringField(required=True, default=self.get_display_name())
+    games_started = db.IntField(requred=True, default=0)
 
     week_1_avail = db.BooleanField(default=False)
     week_2_avail = db.BooleanField(default=False)
