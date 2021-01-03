@@ -19,8 +19,9 @@ bp = Blueprint('dashboard', __name__, url_prefix='/')
 @bp.route("/homepage")
 @login_required
 def logged_in_homepage():
-    members = current_user.memberships
-    return render_template("logged_in_homepage.html", members=members)
+    league_memberships = current_user.memberships
+    print(league_memberships)
+    return render_template("logged_in_homepage.html", league_memberships=league_memberships)
 
 @bp.route("/select_team/<league_id>", methods=("GET", "POST"))
 @login_required
@@ -53,7 +54,7 @@ def select_team(league_id):
             # TODO: figure out how to delete the team that's being replaced if
             #       one already exists
 
-            return redirect(url_for("dashboard.logged_in_homepage"))
+            return redirect(url_for("dashboard.view_league", league_id=league_id))
 
         else:
             e = "Invalid team composition"

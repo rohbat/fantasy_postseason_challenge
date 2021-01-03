@@ -11,10 +11,10 @@
               <th>League Name</th>
               <th>Team Name</th>
             </tr>
-            {% for member in members %}
+            {% for league_membership in league_memberships %}
             <tr>
-              <td><a href="{{url_for('dashboard.view_league', league_id=member.id)}}">{{ member.league_name }}</a></td>
-              <td>{{ member.team_name }}</td>
+              <td><a href="{{url_for('dashboard.view_league', league_id=league_membership.id)}}">{{ league_membership.league_name }}</a></td>
+              <td>{{ league_membership.team_name }}</td>
             </tr>
             {% endfor %}
         </table>
