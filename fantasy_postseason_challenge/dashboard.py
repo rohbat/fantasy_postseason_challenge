@@ -1,12 +1,10 @@
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
-from flask import current_app as app
 from flask_login import login_user, login_required, logout_user, current_user
 
 from .account import User
-from .league import League
-from .member import Member
+from .league import League, Member
 from .fantasy_team import FantasyTeam, Player
 from .forms import SelectTeamForm
 
