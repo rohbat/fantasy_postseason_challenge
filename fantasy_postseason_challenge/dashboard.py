@@ -1,18 +1,14 @@
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
-from flask import current_app as app
 from flask_login import login_user, login_required, logout_user, current_user
 
 from .account import User
-from .league import League
-from .member import Member
+from .league import League, Member
 from .fantasy_team import FantasyTeam, Player
 from .forms import SelectTeamForm
 
 from bson.objectid import ObjectId
-
-from werkzeug.security import check_password_hash, generate_password_hash
 
 bp = Blueprint('dashboard', __name__, url_prefix='/')
 
@@ -26,11 +22,10 @@ def logged_in_homepage():
 @bp.route("/select_team/<league_id>", methods=("GET", "POST"))
 @login_required
 def select_team(league_id):
-    # TODO: detect preexisting teams within a league
     form = SelectTeamForm(request.form)
     if request.method == "POST":
         if form.validate_week_1():
-
+            #TODO: Update instead of create new object when team already exists.
             fantasy_team = FantasyTeam(
                 QB = form.data["QB"],
                 RB1 = form.data["RB1"],
@@ -44,15 +39,11 @@ def select_team(league_id):
             )
             fantasy_team.save()
 
-            league = League.objects(id=league_id).first()
-            for member in league.member_id_list:
-                member_id = member.account_id
-                if member_id == current_user.id:
+            league = try_get_league_by_id(league_id)
+            for member in league.member_list:
+                if member.account_id == current_user.id:
                     member.week_1_team = fantasy_team
             league.save()
-
-            # TODO: figure out how to delete the team that's being replaced if
-            #       one already exists
 
             return redirect(url_for("dashboard.view_league", league_id=league_id))
 
@@ -80,63 +71,56 @@ def select_team(league_id):
 @bp.route("/league/<league_id>")
 @login_required
 def view_league(league_id):
-    print(current_user.username)
-    print(league_id)
+    league = try_get_league_by_id(league_id)
 
-    # making some assumptions about league structure
-    # hardcoding data until figure out table structures
-    # TODO: figure this out and fix
-    data = {
-        "b": {"pos1": "wolf1", "pos2": "tiger2", "pos3": "fox3"},
-        "joe": {"pos1": "wolf1", "pos2": "wolf2", "pos3": "fox3"},
-        "c": {"pos1": "fox1", "pos2": "fox2", "pos3": "fox3"},
-    }
+    league_members = league.member_list
+    league_members = sorted(league_members, key=lambda x: x.account_id == current_user.id, reverse=True)
 
-    player_membership = {
-        "wolf1" : "wolf",
-        "wolf2" : "wolf",
-        "wolf3" : "wolf",
-        "tiger1" : "tiger",
-        "tiger2" : "tiger",
-        "tiger3" : "tiger",
-        "fox1" : "fox",
-        "fox2" : "fox",
-        "fox3" : "fox",
-    }
-    player_scores = {
-        "wolf1" : 9,
-        "wolf2" : 8,
-        "wolf3" : 123,
-        "tiger1" : 2,
-        "tiger2" : 2,
-        "tiger3" : 28,
-        "fox1" : -17,
-        "fox2" : 17,
-        "fox3" : 107,
-    }
+    team_names = [member.team_name for member in league_members]
+    league_teams = [member.week_1_team for member in league_members]
+    print(team_names)
+    print(league_teams)
+
+    positions = ["QB", "RB1", "RB2", "WR1", "WR2", "TE", "FLEX", "K", "D/ST"]
+    ['KC', 'BUF', 'PIT', 'TEN', 'BAL', 'CLE', 'IND', 'GB', 'NO', 'SEA', 'WAS', 'TB', 'LAR', 'CHI']
     team_colors = {
-        "wolf": ("#808080", "#FF00FF"),
-        "tiger": ("#FF9900", "#000000"),
-        "fox": ("#FF0000", "#FFFFFF"),
+        'None' : ("#808080", "#FF00FF"),
+        'KC' : ("#E31837", "#FFB81C"),
+        'BUF' : ("#C60C30", "#00338D"),
+        'PIT' : ("#101820", "#FFB612"),
+        'TEN' : ("#4B92DB", "#0C2340"),
+        'BAL' : ("#241773", "#FFFFFF"),
+        'CLE' : ("#311D00", "#FF3C00"),
+        'IND' : ("#002C5F", "#FFFFFF"),
+        'GB' : ("#203731", "#FFB612"),
+        'NO' : ("#D3BC8D", "#101820"),
+        'SEA' : ("#002244", "#69BE28"),
+        'WAS' : ("#773141", "#FFB612"),
+        'TB' : ("#D50A0A", "#0A0A08"),
+        'LAR' : ("#003594", "#FFD100"),
+        'CHI' : ("#0B162A", "#C83803"),
     }
-    positions = ["pos1", "pos2", "pos3"]
 
-    members = sorted(data, key=lambda x: x == current_user.username, reverse=True)
-    table = [[data[member][position] for member in members] for position in positions]
-    table = [
-        [
-            (player, player_scores[player], *team_colors[player_membership[player]])
-            for player in row
-        ]
-        for row in table
-    ]
+    #TODO: Refactor this.
+    data = []
+
+    if league_teams:
+        data.append([(team.QB.display_name, 0, *team_colors[team.QB.team]) if team else ('set ur lineup', 0, *team_colors['None']) for team in league_teams])
+        data.append([(team.RB1.display_name, 0, *team_colors[team.RB1.team]) if team else ('set ur lineup', 0, *team_colors['None']) for team in league_teams])
+        data.append([(team.RB2.display_name, 0, *team_colors[team.RB2.team]) if team else ('set ur lineup', 0, *team_colors['None']) for team in league_teams])
+        data.append([(team.WR1.display_name, 0, *team_colors[team.WR1.team]) if team else ('set ur lineup', 0, *team_colors['None']) for team in league_teams])
+        data.append([(team.WR2.display_name, 0, *team_colors[team.WR2.team]) if team else ('set ur lineup', 0, *team_colors['None']) for team in league_teams])
+        data.append([(team.TE.display_name, 0, *team_colors[team.TE.team]) if team else ('set ur lineup', 0, *team_colors['None']) for team in league_teams])
+        data.append([(team.FLEX.display_name, 0, *team_colors[team.FLEX.team]) if team else ('set ur lineup', 0, *team_colors['None']) for team in league_teams])
+        data.append([(team.K.display_name, 0, *team_colors[team.K.team]) if team else ('set ur lineup', 0, *team_colors['None']) for team in league_teams])
+        data.append([(team.D_ST.display_name, 0, *team_colors[team.D_ST.team]) if team else ('set ur lineup', 0, *team_colors['None']) for team in league_teams])
 
     return render_template(
         "view_league.html",
         positions=positions,
-        members=members,
-        data=table,
-        league_id=league_id,
+        team_names=team_names,
+        data=data,
+        league=league,
         score_width=50, # TODO: choose good values for these and put in html?
         name_width=150, # TODO: choose good values for these and put in html?
         zip=zip,
@@ -167,12 +151,9 @@ def new_league():
             new_league = League(league_name=league_name, 
                                 ruleset=ruleset, 
                                 commissioner_id=current_user.id,
-                                member_id_list=[new_member])
+                                member_list=[new_member])
 
             new_league.save()
-
-            # Append new member id to new league's member list
-            # new_league.update(push__member_id_list=new_member)
 
             # Append new league id to current user's league membership list
             current_user.update(push__memberships=new_league)
@@ -194,10 +175,7 @@ def join_league():
         if not (league_id and team_name):
             e = "league id and team name required"
         
-        try:
-            league = League.objects(id=ObjectId(league_id)).first()
-        except:
-            e = f"League with ID: \"{league_id}\" not found"
+        league = try_get_league_by_id(league_id)
         
         #TODO: Check if current user is already in this league.
 
@@ -207,10 +185,9 @@ def join_league():
             # Create new member object and save to db
             new_member = Member(team_name=team_name, 
                                 account_id=current_user.id)
-            new_member.save()
 
             # Append new member id to new league's member list
-            league.update(push__member_id_list=new_member)
+            league.update(push__member_list=new_member)
 
             # Append new league id to current user's league membership list
             current_user.update(push__memberships=league)
@@ -220,3 +197,10 @@ def join_league():
             flash(e)
     
     return render_template("join_league.html")
+
+def try_get_league_by_id(league_id):
+    try:
+        league = League.objects(id=ObjectId(league_id)).first()
+        return league
+    except:
+        e = f"League with ID: \"{league_id}\" not found"

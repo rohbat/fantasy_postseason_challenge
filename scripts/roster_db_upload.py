@@ -18,14 +18,20 @@ class Player(Document):
         return '[' + self.team + '] ' + self.name 
 
 def upload_all_rosters(chrome_driver):
-    current_week_teams = ['KC', 'BUF', 'PIT', 'GB', 'NO', 'SEA', 'TB']
-    url_abbrev_map = {'KC':'kan', 'BUF':'buf', 'PIT':'pit', 'GB':'gnb', 'NO':'nor', 'SEA':'sea', 'TB':'tam'}
-    team_name_map = {'KC':'Chiefs', 'BUF':'Bills', 'PIT':'Steelers', 'GB':'Packers', 'NO':'Saints', 'SEA':'Seahawks', 'TB':'Buccaneers'}
+    current_week_teams = ['KC', 'BUF', 'PIT', 'TEN', 'BAL', 'CLE', 'IND', 'GB', 'NO', 'SEA', 'WAS', 'TB', 'LAR', 'CHI']
+    url_abbrev_map = {'KC':'kan', 'BUF':'buf', 'PIT':'pit', 'TEN':'oti', 'BAL':'rav', 'CLE':'cle', 'IND':'clt', 
+                      'GB':'gnb', 'NO':'nor', 'SEA':'sea', 'WAS':'was', 'TB':'tam', 'LAR':'ram', 'CHI':'chi'}
+    team_name_map = {'KC':'Chiefs', 'BUF':'Bills', 'PIT':'Steelers', 'TEN':'Titans', 'BAL':'Ravens', 'CLE':'Browns', 'IND':'Colts',
+                     'GB':'Packers', 'NO':'Saints', 'SEA':'Seahawks', 'WAS':'Football Team', 'TB':'Buccaneers', 'LAR':'Rams', 'CHI':'Bears'}
 
     for team_abbrev in current_week_teams:
         upload_team_roster(chrome_driver, team_abbrev, url_abbrev_map[team_abbrev], team_name_map[team_abbrev])
 
 def upload_team_roster(chrome_driver, team_abbrev, url_abbrev, team_name):
+    week_1_avail = True
+    if team_abbrev == 'KC' or team_abbrev == 'GB':
+        week_1_avail = False
+
     URL = 'https://www.pro-football-reference.com/teams/' + url_abbrev + '/2020_roster.htm'
     chrome_driver.get(URL)
 
@@ -48,11 +54,15 @@ def upload_team_roster(chrome_driver, team_abbrev, url_abbrev, team_name):
                 if games_started_text:
                     games_started = int(games_started_text)
                 
+                week_1_avail = True
+                if team_abbrev == 'KC' or team_abbrev == 'GB':
+                    week_1_avail = False
+
                 player = Player(name=name, 
                                 team=team_abbrev,
                                 position=pos,
                                 games_started=games_started,
-                                week_1_avail=True)
+                                week_1_avail=week_1_avail)
                 player.display_name = player.get_display_name()
                 print(player.name + ' | ' + player.team + ' | ' + player.position + ' | ' + str(player.games_started) + ' | ' + player.display_name)
                 player.save()
@@ -61,7 +71,7 @@ def upload_team_roster(chrome_driver, team_abbrev, url_abbrev, team_name):
                     team=team_abbrev,
                     position='D/ST',
                     games_started=16,
-                    week_1_avail=True)
+                    week_1_avail=week_1_avail)
     player.display_name = player.get_display_name()
     print(player.name + ' | ' + player.team + ' | ' + player.position + ' | ' + str(player.games_started) + ' | ' + player.display_name)
     player.save()

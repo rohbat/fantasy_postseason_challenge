@@ -1,7 +1,6 @@
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
-# from flask import current_app as app
 from flask_login import login_user, login_required, logout_user, current_user
 
 from .account import User
