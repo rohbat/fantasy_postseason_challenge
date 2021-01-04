@@ -11,18 +11,17 @@
   </head>
 
   <body>
-    <h1>League name here</h1>
-    League id here<br>
+    <h1>{{league.league_name}}</h1>
     <a href="{{url_for('dashboard.logged_in_homepage')}}">go back</a><br>
-    <a href="{{url_for('dashboard.select_team', league_id=league_id)}}" >select your team</a><br>
+    <a href="{{url_for('dashboard.select_team', league_id=league.id)}}" >select your team</a><br>
 
-    <h3>Phase one</h3>
+    <h3>Wild Card Weekend</h3>
     <table style="width:{{score_width*(len(members)+1) + (name_width*len(members))}}px;">
       <thead>
         <tr>
           <th></th>
-          {% for member in members %}
-            <th colspan="2"; style="text-align:center">{{member}}</th>
+          {% for team_name in team_names %}
+            <th colspan="2"; style="text-align:center">{{team_name}}</th>
           {% endfor %}
         </tr>
       </thead>
