@@ -22,11 +22,10 @@ def logged_in_homepage():
 @bp.route("/select_team/<league_id>", methods=("GET", "POST"))
 @login_required
 def select_team(league_id):
-    # TODO: detect preexisting teams within a league
     form = SelectTeamForm(request.form)
     if request.method == "POST":
         if form.validate_week_1():
-
+            #TODO: Update instead of create new object when team already exists.
             fantasy_team = FantasyTeam(
                 QB = form.data["QB"],
                 RB1 = form.data["RB1"],
@@ -41,14 +40,10 @@ def select_team(league_id):
             fantasy_team.save()
 
             league = try_get_league_by_id(league_id)
-            for member in league.member_id_list:
-                member_id = member.account_id
-                if member_id == current_user.id:
+            for member in league.member_list:
+                if member.account_id == current_user.id:
                     member.week_1_team = fantasy_team
             league.save()
-
-            # TODO: figure out how to delete the team that's being replaced if
-            #       one already exists
 
             return redirect(url_for("dashboard.view_league", league_id=league_id))
 
@@ -78,7 +73,7 @@ def select_team(league_id):
 def view_league(league_id):
     league = try_get_league_by_id(league_id)
 
-    league_members = league.member_id_list
+    league_members = league.member_list
     league_members = sorted(league_members, key=lambda x: x.account_id == current_user.id, reverse=True)
 
     team_names = [member.team_name for member in league_members]
@@ -91,7 +86,7 @@ def view_league(league_id):
     team_colors = {
         'None' : ("#808080", "#FF00FF"),
         'KC' : ("#E31837", "#FFB81C"),
-        'BUF' : ("#00338D", "#C60C30"),
+        'BUF' : ("#C60C30", "#00338D"),
         'PIT' : ("#101820", "#FFB612"),
         'TEN' : ("#4B92DB", "#0C2340"),
         'BAL' : ("#241773", "#FFFFFF"),
@@ -156,12 +151,9 @@ def new_league():
             new_league = League(league_name=league_name, 
                                 ruleset=ruleset, 
                                 commissioner_id=current_user.id,
-                                member_id_list=[new_member])
+                                member_list=[new_member])
 
             new_league.save()
-
-            # Append new member id to new league's member list
-            # new_league.update(push__member_id_list=new_member)
 
             # Append new league id to current user's league membership list
             current_user.update(push__memberships=new_league)
@@ -195,7 +187,7 @@ def join_league():
                                 account_id=current_user.id)
 
             # Append new member id to new league's member list
-            league.update(push__member_id_list=new_member)
+            league.update(push__member_list=new_member)
 
             # Append new league id to current user's league membership list
             current_user.update(push__memberships=league)
