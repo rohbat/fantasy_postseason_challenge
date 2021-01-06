@@ -121,8 +121,9 @@ def view_league(league_id):
         team_names=team_names,
         data=data,
         league=league,
+        position_width=60,
         score_width=50, # TODO: choose good values for these and put in html?
-        name_width=150, # TODO: choose good values for these and put in html?
+        name_width=180, # TODO: choose good values for these and put in html?
         zip=zip,
         enumerate=enumerate,
         len=len
