@@ -2,7 +2,7 @@ import os
 from .db import initialize_db
 from .account import Account
 
-from flask import Flask, request
+from flask import Flask, request, redirect
 from flask_login import LoginManager
 
 from urllib.parse import urlparse, urlunparse
