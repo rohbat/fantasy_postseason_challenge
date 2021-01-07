@@ -16,8 +16,17 @@ bp = Blueprint('dashboard', __name__, url_prefix='/')
 @login_required
 def logged_in_homepage():
     league_memberships = current_user.memberships
-    print(league_memberships)
-    return render_template("logged_in_homepage.html", league_memberships=league_memberships)
+    team_names = []
+    for league_membership in league_memberships:
+        for member in league_membership.member_list:
+            if member.account_id == current_user.id:
+                team_names.append(member.team_name)
+    return render_template(
+        "logged_in_homepage.html",
+        league_memberships=league_memberships,
+        team_names=team_names,
+        zip=zip
+    )
 
 @bp.route("/select_team/<league_id>", methods=("GET", "POST"))
 @login_required
