@@ -77,6 +77,7 @@ def view_league(league_id):
     league_members = sorted(league_members, key=lambda x: x.account_id == current_user.id, reverse=True)
 
     team_names = [member.team_name for member in league_members]
+    member_names = [Account.objects(id=member.account_id).first().display_name for member in league_members]
     league_teams = [member.week_1_team for member in league_members]
     print(team_names)
     print(league_teams)
@@ -119,6 +120,7 @@ def view_league(league_id):
         "view_league.html",
         positions=positions,
         team_names=team_names,
+        member_names=member_names,
         data=data,
         league=league,
         position_width=60,
