@@ -3,6 +3,7 @@ from .league import League
 
 class Account(db.Document):
     username = db.StringField(required=True, unique=True)
+    display_name = db.StringField(required=True)
     password_hash = db.StringField(required=True)
     memberships = db.ListField(db.ReferenceField(League))
 
