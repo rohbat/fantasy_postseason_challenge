@@ -17,26 +17,21 @@ bp = Blueprint('dashboard', __name__, url_prefix='/')
 def logged_in_homepage():
     league_memberships = current_user.memberships
     team_names = []
-    league_ids = []
-    commissioner_leagues = []
-    commissioner_league_ids = []
-    
+    league_commissionerships = []
+
     for league_membership in league_memberships:
         for member in league_membership.member_list:
             if member.account_id == current_user.id:
                 team_names.append(member.team_name)
                 break
         if league_membership.commissioner_id == current_user.id:
-            commissioner_league_ids.append(league_membership.id)
-            commissioner_leagues.append(league_membership.league_name)
+            league_commissionerships.append(league_membership)
 
     return render_template(
         "logged_in_homepage.html",
         league_memberships=league_memberships,
         team_names=team_names,
-        league_ids=league_ids,
-        commissioner_leagues=commissioner_leagues,
-        commissioner_league_ids=commissioner_league_ids,
+        league_commissionerships=league_commissionerships,
         zip=zip,
     )
 

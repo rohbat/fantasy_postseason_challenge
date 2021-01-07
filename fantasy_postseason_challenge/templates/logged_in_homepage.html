@@ -18,7 +18,7 @@
               </tr>
             {% endfor %}
         </table>
-        {% if commissioner_leagues %}
+        {% if league_commissionerships %}
           <br>
           <h1>Leagues you commission</h1>
           Share the league id with your friends so they can join!<br>
@@ -27,10 +27,10 @@
                 <th>League Name</th>
                 <th>League Id</th>
               </tr>
-              {% for league_name, league_id in zip(commissioner_leagues, commissioner_league_ids) %}
+              {% for league in league_commissionerships %}
                 <tr>
-                  <td><a href="{{url_for('dashboard.view_league', league_id=league_id)}}">{{ league_name }}</a></td>
-                  <td>{{ league_id }}</td>
+                  <td><a href="{{url_for('dashboard.view_league', league_id=league.id)}}">{{ league.league_name }}</a></td>
+                  <td>{{ league.id }}</td>
                 </tr>
               {% endfor %}
             </table>
