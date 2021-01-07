@@ -12,12 +12,30 @@
               <th>Team Name</th>
             </tr>
             {% for league_membership, team_name in zip(league_memberships, team_names) %}
-            <tr>
-              <td><a href="{{url_for('dashboard.view_league', league_id=league_membership.id)}}">{{ league_membership.league_name }}</a></td>
-              <td>{{ team_name }}</td>
-            </tr>
+              <tr>
+                <td><a href="{{url_for('dashboard.view_league', league_id=league_membership.id)}}">{{ league_membership.league_name }}</a></td>
+                <td>{{ team_name }}</td>
+              </tr>
             {% endfor %}
         </table>
+        {% if commissioner_leagues %}
+          <br>
+          <h1>Leagues you commission</h1>
+          Share the league id with your friends so they can join!<br>
+            <table style="width:50%">
+              <tr>
+                <th>League Name</th>
+                <th>League Id</th>
+              </tr>
+              {% for league_name, league_id in zip(commissioner_leagues, commissioner_league_ids) %}
+                <tr>
+                  <td><a href="{{url_for('dashboard.view_league', league_id=league_id)}}">{{ league_name }}</a></td>
+                  <td>{{ league_id }}</td>
+                </tr>
+              {% endfor %}
+            </table>
+
+        {% endif %}
         <br>
         <a href="{{url_for('dashboard.new_league')}}">Create new league</a><br>
         <a href="{{url_for('dashboard.join_league')}}">Join a league</a><br>
