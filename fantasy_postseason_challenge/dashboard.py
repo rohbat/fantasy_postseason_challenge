@@ -3,7 +3,7 @@ from flask import (
 )
 from flask_login import login_user, login_required, logout_user, current_user
 
-from .account import User
+from .account import Account
 from .league import League, Member
 from .fantasy_team import FantasyTeam, Player
 from .forms import SelectTeamForm

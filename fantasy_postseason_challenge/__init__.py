@@ -1,6 +1,6 @@
 import os
 from .db import initialize_db
-from .account import User
+from .account import Account
 
 from flask import Flask
 from flask_login import LoginManager
@@ -24,7 +24,7 @@ def create_app(test_config=None):
 
     @login_manager.user_loader
     def load_user(username):
-        return User.objects(username=username).first()
+        return Account.objects(username=username).first()
         
     from . import auth, dashboard
     app.register_blueprint(auth.bp)

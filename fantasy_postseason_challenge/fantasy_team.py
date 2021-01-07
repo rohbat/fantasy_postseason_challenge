@@ -1,18 +1,18 @@
 from .db import db
 
-class PlayerStats(Document):
-    pass_yds = IntField()
-    pass_td = IntField()
-    rush_yds = IntField()
-    rush_td = IntField()
-    rec_yds = IntField()
-    rec_td = IntField()
-    rec = IntField()
-    pass_int = IntField()
-    fumbles = IntField()
-    score_normal = DecimalField(required=True, default=0, precision=2)
-    score_half_ppr = DecimalField(required=True, default=0, precision=2)
-    score_ppr = DecimalField(required=True, default=0, precision=2)
+class PlayerStats(db.EmbeddedDocument):
+    pass_yds = db.IntField()
+    pass_td = db.IntField()
+    rush_yds = db.IntField()
+    rush_td = db.IntField()
+    rec_yds = db.IntField()
+    rec_td = db.IntField()
+    rec = db.IntField()
+    pass_int = db.IntField()
+    fumbles = db.IntField()
+    score_normal = db.DecimalField(required=True, default=0, precision=2)
+    score_half_ppr = db.DecimalField(required=True, default=0, precision=2)
+    score_ppr = db.DecimalField(required=True, default=0, precision=2)
 
 class Player(db.Document):
     name = db.StringField(required=True)

@@ -3,7 +3,7 @@ from flask import (
 )
 from flask_login import login_user, login_required, logout_user, current_user
 
-from .account import User
+from .account import Account
 
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -22,11 +22,11 @@ def register():
         e = None
         if not (username and password):
             e = "username and password required"
-        elif User.objects(username=username).first():
+        elif Account.objects(username=username).first():
             e = f"Username: \"{username}\" already exists"
         
         if not e:
-            new_user = User(username=username, password_hash=generate_password_hash(password))
+            new_user = Account(username=username, password_hash=generate_password_hash(password))
             new_user.save()
             login_user(new_user)
             return redirect(url_for("dashboard.logged_in_homepage"))
@@ -45,7 +45,7 @@ def login():
         if not (username and password):
             e = "username and password required"
         
-        user = User.objects(username=username).first()
+        user = Account.objects(username=username).first()
 
         if not user:
             e = f"Username: \"{username}\" not found"

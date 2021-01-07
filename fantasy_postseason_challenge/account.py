@@ -1,7 +1,7 @@
 from .db import db
 from .league import League
 
-class User(db.Document):
+class Account(db.Document):
     username = db.StringField(required=True, unique=True)
     password_hash = db.StringField(required=True)
     memberships = db.ListField(db.ReferenceField(League))
