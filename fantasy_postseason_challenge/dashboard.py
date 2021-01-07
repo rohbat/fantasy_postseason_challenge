@@ -16,8 +16,17 @@ bp = Blueprint('dashboard', __name__, url_prefix='/')
 @login_required
 def logged_in_homepage():
     league_memberships = current_user.memberships
-    print(league_memberships)
-    return render_template("logged_in_homepage.html", league_memberships=league_memberships)
+    team_names = []
+    for league_membership in league_memberships:
+        for member in league_membership.member_list:
+            if member.account_id == current_user.id:
+                team_names.append(member.team_name)
+    return render_template(
+        "logged_in_homepage.html",
+        league_memberships=league_memberships,
+        team_names=team_names,
+        zip=zip
+    )
 
 @bp.route("/select_team/<league_id>", methods=("GET", "POST"))
 @login_required
@@ -77,6 +86,7 @@ def view_league(league_id):
     league_members = sorted(league_members, key=lambda x: x.account_id == current_user.id, reverse=True)
 
     team_names = [member.team_name for member in league_members]
+    member_names = [Account.objects(id=member.account_id).first().display_name for member in league_members]
     league_teams = [member.week_1_team for member in league_members]
     print(team_names)
     print(league_teams)
@@ -119,6 +129,7 @@ def view_league(league_id):
         "view_league.html",
         positions=positions,
         team_names=team_names,
+        member_names=member_names,
         data=data,
         league=league,
         position_width=60,
