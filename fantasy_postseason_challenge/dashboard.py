@@ -115,15 +115,15 @@ def view_league(league_id):
     data = []
 
     if league_teams:
-        data.append([(team.QB.display_name, 0, *team_colors[team.QB.team]) if team else ('set ur lineup', 0, *team_colors['None']) for team in league_teams])
-        data.append([(team.RB1.display_name, 0, *team_colors[team.RB1.team]) if team else ('set ur lineup', 0, *team_colors['None']) for team in league_teams])
-        data.append([(team.RB2.display_name, 0, *team_colors[team.RB2.team]) if team else ('set ur lineup', 0, *team_colors['None']) for team in league_teams])
-        data.append([(team.WR1.display_name, 0, *team_colors[team.WR1.team]) if team else ('set ur lineup', 0, *team_colors['None']) for team in league_teams])
-        data.append([(team.WR2.display_name, 0, *team_colors[team.WR2.team]) if team else ('set ur lineup', 0, *team_colors['None']) for team in league_teams])
-        data.append([(team.TE.display_name, 0, *team_colors[team.TE.team]) if team else ('set ur lineup', 0, *team_colors['None']) for team in league_teams])
-        data.append([(team.FLEX.display_name, 0, *team_colors[team.FLEX.team]) if team else ('set ur lineup', 0, *team_colors['None']) for team in league_teams])
-        data.append([(team.K.display_name, 0, *team_colors[team.K.team]) if team else ('set ur lineup', 0, *team_colors['None']) for team in league_teams])
-        data.append([(team.D_ST.display_name, 0, *team_colors[team.D_ST.team]) if team else ('set ur lineup', 0, *team_colors['None']) for team in league_teams])
+        data.append([(team.QB.display_name, 0, *team_colors[team.QB.team]) if team else ('set your lineup', 0, *team_colors['None']) for team in league_teams])
+        data.append([(team.RB1.display_name, 0, *team_colors[team.RB1.team]) if team else ('set your lineup', 0, *team_colors['None']) for team in league_teams])
+        data.append([(team.RB2.display_name, 0, *team_colors[team.RB2.team]) if team else ('set your lineup', 0, *team_colors['None']) for team in league_teams])
+        data.append([(team.WR1.display_name, 0, *team_colors[team.WR1.team]) if team else ('set your lineup', 0, *team_colors['None']) for team in league_teams])
+        data.append([(team.WR2.display_name, 0, *team_colors[team.WR2.team]) if team else ('set your lineup', 0, *team_colors['None']) for team in league_teams])
+        data.append([(team.TE.display_name, 0, *team_colors[team.TE.team]) if team else ('set your lineup', 0, *team_colors['None']) for team in league_teams])
+        data.append([(team.FLEX.display_name, 0, *team_colors[team.FLEX.team]) if team else ('set your lineup', 0, *team_colors['None']) for team in league_teams])
+        data.append([(team.K.display_name, 0, *team_colors[team.K.team]) if team else ('set your lineup', 0, *team_colors['None']) for team in league_teams])
+        data.append([(team.D_ST.display_name, 0, *team_colors[team.D_ST.team]) if team else ('set your lineup', 0, *team_colors['None']) for team in league_teams])
 
     return render_template(
         "view_league.html",
