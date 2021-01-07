@@ -2,8 +2,10 @@ import os
 from .db import initialize_db
 from .account import Account
 
-from flask import Flask
+from flask import Flask, request
 from flask_login import LoginManager
+
+from urllib.parse import urlparse, urlunparse
 
 def create_app(test_config=None):
     # create and configure the app
@@ -25,6 +27,14 @@ def create_app(test_config=None):
     @login_manager.user_loader
     def load_user(username):
         return Account.objects(username=username).first()
+
+    @app.before_request
+    def redirect_subdomains():
+        """Redirect non-www and www requests to football.<domain>"""
+        urlparts = urlparse(request.url)
+        if urlparts.netloc == 'fantasypostseasonchallenge.com' or urlparts.netloc == 'www.fantasypostseasonchallenge.com':
+            urlparts = urlparts._replace(netloc='football.fantasypostseasonchallenge.com')
+            return redirect(urlunparse(urlparts), code=301)
         
     from . import auth, dashboard
     app.register_blueprint(auth.bp)
