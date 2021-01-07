@@ -16,7 +16,7 @@
     <a href="{{url_for('dashboard.select_team', league_id=league.id)}}" >select your team</a><br>
 
     <h3>Wild Card Weekend</h3>
-    <table style="width:{{score_width*(len(members)+1) + (name_width*len(members))}}px;">
+    <table>
       <thead>
         <tr>
           <th></th>
@@ -29,7 +29,7 @@
       <tbody>
         {% for i, (position, row) in enumerate(zip(positions, data)) %}
           <tr>
-            <th>{{position}}</th>
+            <th style="width:{{position_width}}">{{position}}</th>
             {%for col in row%}
               <td style="background-color:{{col[2]}};color:{{col[3]}};width:{{name_width}}px;">{{col[0]}}</td>
               <td style="width:{{score_width}}">{{col[1]}}</td>

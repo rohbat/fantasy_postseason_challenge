@@ -3,6 +3,21 @@ from bs4 import BeautifulSoup as bs
 from mongoengine import *
 import configparser
 
+class PlayerStats(EmbeddedDocument):
+    pass_yds = IntField()
+    pass_td = IntField()
+    rush_yds = IntField()
+    rush_td = IntField()
+    rec_yds = IntField()
+    rec_td = IntField()
+    rec = IntField()
+    pass_int = IntField()
+    fumbles = IntField()
+
+    score_normal = DecimalField(required=True, default=0, precision=2)
+    score_half_ppr = DecimalField(required=True, default=0, precision=2)
+    score_ppr = DecimalField(required=True, default=0, precision=2)
+
 class Player(Document):
     name = StringField(required=True)
     team = StringField(required=True)
@@ -13,6 +28,10 @@ class Player(Document):
     week_1_avail = BooleanField(default=False)
     week_2_avail = BooleanField(default=False)
     week_3_avail = BooleanField(default=False)
+
+    week_1_stats = EmbeddedDocumentField(PlayerStats)
+    week_2_stats = EmbeddedDocumentField(PlayerStats)
+    week_3_stats = EmbeddedDocumentField(PlayerStats)
 
     def get_display_name(self):
         return '[' + self.team + '] ' + self.name 
