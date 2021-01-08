@@ -10,6 +10,8 @@ from .forms import SelectTeamForm
 
 from bson.objectid import ObjectId
 
+from datetime import datetime
+
 bp = Blueprint('dashboard', __name__, url_prefix='/')
 
 @bp.route("/homepage")
@@ -38,6 +40,12 @@ def logged_in_homepage():
 @bp.route("/select_team/<league_id>", methods=("GET", "POST"))
 @login_required
 def select_team(league_id):
+    # first game of first week @ Jan 9, 1:05 pm ET -> 6:05 pm UTC
+    if datetime.now(tz.UTC) > datetime(2021, 1, 9, 18, 5, tzinfo=tz.UTC):
+        e = "Picks have locked for this week"
+        flash(e)
+        return redirect(url_for("dashboard.view_league", league_id=league_id))
+
     form = SelectTeamForm(request.form)
     if request.method == "POST":
         if form.validate_week_1():
