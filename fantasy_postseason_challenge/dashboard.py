@@ -17,15 +17,22 @@ bp = Blueprint('dashboard', __name__, url_prefix='/')
 def logged_in_homepage():
     league_memberships = current_user.memberships
     team_names = []
+    league_commissionerships = []
+
     for league_membership in league_memberships:
         for member in league_membership.member_list:
             if member.account_id == current_user.id:
                 team_names.append(member.team_name)
+                break
+        if league_membership.commissioner_id == current_user.id:
+            league_commissionerships.append(league_membership)
+
     return render_template(
         "logged_in_homepage.html",
         league_memberships=league_memberships,
         team_names=team_names,
-        zip=zip
+        league_commissionerships=league_commissionerships,
+        zip=zip,
     )
 
 @bp.route("/select_team/<league_id>", methods=("GET", "POST"))
@@ -60,20 +67,21 @@ def select_team(league_id):
             e = "Invalid team composition"
             flash(e)
 
-    qbs = Player.objects(position="QB", week_1_avail=True)
-    rbs = Player.objects(position="RB", week_1_avail=True)
-    wrs = Player.objects(position="WR", week_1_avail=True)
-    tes = Player.objects(position="TE", week_1_avail=True)
-    ks = Player.objects(position="K", week_1_avail=True)
-    d_sts = Player.objects(position="D/ST", week_1_avail=True)
+    qbs = sorted(Player.objects(position="QB", week_1_avail=True), key=lambda x: x.games_started, reverse=True)
+    rbs = sorted(Player.objects(position="RB", week_1_avail=True), key=lambda x: x.games_started, reverse=True)
+    wrs = sorted(Player.objects(position="WR", week_1_avail=True), key=lambda x: x.games_started, reverse=True)
+    tes = sorted(Player.objects(position="TE", week_1_avail=True), key=lambda x: x.games_started, reverse=True)
+    ks = sorted(Player.objects(position="K", week_1_avail=True), key=lambda x: x.games_started, reverse=True)
+    d_sts = sorted(Player.objects(position="D/ST", week_1_avail=True), key=lambda x: x.games_started, reverse=True)
 
     form.QB.choices = [(qb.id, qb.display_name) for qb in qbs]
     form.RB1.choices = form.RB2.choices = [(rb.id, rb.display_name) for rb in rbs]
     form.WR1.choices = form.WR2.choices = [(wr.id, wr.display_name) for wr in wrs]
     form.TE.choices = [(te.id, te.display_name) for te in tes]
-    form.FLEX.choices = form.RB1.choices + form.WR1.choices + form.TE.choices
+    form.FLEX.choices = [(flex.id, flex.display_name) for flex in sorted(rbs + wrs + tes, key=lambda x: x.games_started, reverse=True)]
     form.K.choices = [(k.id, k.display_name) for k in ks]
     form.D_ST.choices = [(d_st.id, d_st.display_name) for d_st in d_sts]
+
     return render_template("select_team.html", form=form)
 
 
