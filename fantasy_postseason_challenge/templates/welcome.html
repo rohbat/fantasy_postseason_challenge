@@ -9,7 +9,6 @@
         Join a league and create a team for each week of the post-season. Compete with your friends!<br>
         <a href="{{url_for('auth.login')}}">log in</a><br>
         <a href="{{url_for('auth.register')}}">register</a><br>
-        <a href="{{url_for('dashboard.logged_in_homepage')}}">logged in home</a><br>
 
         {% with messages = get_flashed_messages() %}
             {% if messages %}

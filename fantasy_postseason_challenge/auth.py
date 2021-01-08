@@ -11,7 +11,10 @@ bp = Blueprint('auth', __name__, url_prefix='/')
 
 @bp.route("/")
 def welcome():
-    return render_template("welcome.html")
+    if current_user.is_authenticated:
+        return redirect(url_for("dashboard.logged_in_homepage"))
+    else:
+        return render_template("welcome.html")
 
 @bp.route("/register", methods=("GET", "POST"))
 def register():
