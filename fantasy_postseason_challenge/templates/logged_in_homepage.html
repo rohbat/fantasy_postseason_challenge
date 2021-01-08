@@ -3,8 +3,10 @@
         <title>Homepage</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="static/bootstrap.min.css" rel="stylesheet" media="screen">
+        <link href="static/main.css" rel="stylesheet" media="screen">
     </head>
     <body>
+      <div class="main-wrapper">
         <h1>Your leagues</h1>
         <table style="width:50%">
             <tr>
@@ -37,9 +39,11 @@
 
         {% endif %}
         <br>
-        <a href="{{url_for('dashboard.new_league')}}">Create new league</a><br>
-        <a href="{{url_for('dashboard.join_league')}}">Join a league</a><br>
-        <a href="{{url_for('auth.logout')}}">log out</a><br>
+        <div class="button-wrapper">
+          <a class="btn btn-primary" href="{{url_for('dashboard.new_league')}}">Create new league</a><br>
+          <a class="btn btn-primary" href="{{url_for('dashboard.join_league')}}">Join a league</a><br>
+          <a class="btn btn-primary" href="{{url_for('auth.logout')}}">log out</a><br>
+        </div>
 
         {% with messages = get_flashed_messages() %}
             {% if messages %}
@@ -48,5 +52,6 @@
                 {% endfor %}
             {% endif %}
         {% endwith %}
+        </div>
     </body>
 </html>

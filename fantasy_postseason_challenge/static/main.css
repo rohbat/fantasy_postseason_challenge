@@ -20,7 +20,7 @@ h1 {
 h4 {
     width: 60%;
     text-align: center;
-    color: white;
+    color: #d2d2d2;
 }
 
 .highlight {
@@ -34,4 +34,12 @@ h4 {
 
 a.btn {
     margin-left: 15px;
+}
+
+/* ===== consider moving this to a separate CSS file ======= */
+/* Login Page Styles */
+
+.login-submit {
+    margin: 10 auto;
+    display: block;
 }
