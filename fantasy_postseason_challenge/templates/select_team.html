@@ -3,25 +3,28 @@
         <title>Select Team</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="{{url_for('static', filename='bootstrap.min.css')}}" rel="stylesheet" media="screen">
+        <link href="{{url_for('static', filename='main.css')}}" rel="stylesheet" media="screen">
     </head>
     <body>
-        <h1>Select team for Wild Card Weekend!</h1><br>
-        <h4>Choose players from BUF, PIT, TEN, BAL, CLE, IND, NO, SEA, WAS, TB, LAR, or CHI.</h4>
-        <h4>No two selected players may be from the same team.</h4><br>
+        <div class="main-wrapper">
+            <h1>Select team for Wild Card Weekend!</h1><br>
+            <h4>Choose players from BUF, PIT, TEN, BAL, CLE, IND, NO, SEA, WAS, TB, LAR, or CHI.</h4>
+            <h4>No two selected players may be from the same team.</h4><br>
 
-        <form action="" method="POST" >
-            {% for field in form %}
-                {{field.label}}: {{field}}<br><br>
-            {% endfor %}
-            <input type="submit" value="Submit">
-        </form>
-
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for message in messages %}
-                    {{message}}<br>
+            <form action="" method="POST" class="select-players">
+                {% for field in form %}
+                    {{field.label}}: {{field}}<br><br>
                 {% endfor %}
-            {% endif %}
-        {% endwith %}
+                <input type="submit" value="Submit">
+            </form>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        {{message}}<br>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
     </body>
 </html>

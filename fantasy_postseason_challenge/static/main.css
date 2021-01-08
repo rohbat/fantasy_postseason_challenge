@@ -43,3 +43,16 @@ a.btn {
     margin: 10 auto;
     display: block;
 }
+
+.select-players {
+    position: relative;
+}
+
+.select-players select {
+    /* position: absolute; */
+    /* right: 0; */
+}
+
+.your-team {
+    /* background-color: white; */
+}

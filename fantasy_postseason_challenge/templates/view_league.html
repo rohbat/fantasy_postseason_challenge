@@ -3,6 +3,7 @@
     <title>League</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="{{url_for('static', filename='bootstrap.min.css')}}" rel="stylesheet" media="screen">
+    <link href="{{url_for('static', filename='main.css')}}" rel="stylesheet" media="screen">
     <style>
       table, th, td {
         border: 1px solid black;
@@ -11,46 +12,47 @@
   </head>
 
   <body>
-    <h1>{{league.league_name}}</h1>
-    <a href="{{url_for('dashboard.logged_in_homepage')}}">go back</a><br>
-    <a href="{{url_for('dashboard.select_team', league_id=league.id)}}" >select your team</a><br>
-
-    <h3>Wild Card Weekend</h3>
-    <table>
-      <thead>
-        <tr>
-          <th></th>
-          {% for team_name in team_names %}
-            <th colspan="2"; style="text-align:center">{{team_name}}</th>
-          {% endfor %}
-        </tr>
-        <tr>
-          <td></td>
-          {% for member_name in member_names %}
-            <td colspan="2"; style="text-align:center">{{member_name}}</th>
-          {% endfor %}
-        </tr>
-      </thead>
-
-      <tbody>
-        {% for i, (position, row) in enumerate(zip(positions, data)) %}
+    <div class="main-wrapper">
+      <h1>{{league.league_name}}</h1>
+      <a href="{{url_for('dashboard.logged_in_homepage')}}">Go back</a><br>
+      <a href="{{url_for('dashboard.select_team', league_id=league.id)}}"> Select your team</a><br>
+      <h3>Wild Card Weekend</h3>
+      <table class="your-team">
+        <thead>
           <tr>
-            <th style="width:{{position_width}}">{{position}}</th>
-            {%for col in row%}
-              <td style="background-color:{{col[2]}};color:{{col[3]}};width:{{name_width}}px;">{{col[0]}}</td>
-              <td style="width:{{score_width}}">{{col[1]}}</td>
+            <th></th>
+            {% for team_name in team_names %}
+              <th colspan="2"; style="text-align:center">{{team_name}}</th>
             {% endfor %}
           </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+          <tr>
+            <td></td>
+            {% for member_name in member_names %}
+              <td colspan="2"; style="text-align:center">{{member_name}}</th>
+            {% endfor %}
+          </tr>
+        </thead>
 
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        {% for message in messages %}
-          {{message}}<br>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
+        <tbody>
+          {% for i, (position, row) in enumerate(zip(positions, data)) %}
+            <tr>
+              <th style="width:{{position_width}}">{{position}}</th>
+              {%for col in row%}
+                <td style="background-color:{{col[2]}};color:{{col[3]}};width:{{name_width}}px;">{{col[0]}}</td>
+                <td style="width:{{score_width}}">{{col[1]}}</td>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          {% for message in messages %}
+            {{message}}<br>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+    </div>
   </body>
 </html>
