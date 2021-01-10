@@ -12,11 +12,19 @@
             <tr>
               <th>League Name</th>
               <th>Team Name</th>
+              <th>Ruleset</th>
             </tr>
             {% for league_membership, team_name in zip(league_memberships, team_names) %}
               <tr>
                 <td><a href="{{url_for('dashboard.view_league', league_id=league_membership.id)}}">{{ league_membership.league_name }}</a></td>
                 <td>{{ team_name }}</td>
+                {% if league_membership.ruleset == 'normal' %}
+                  <td>Normal</td>
+                {% elif league_membership.ruleset == 'ppr' %}
+                  <td>PPR</td>
+                {% else %}
+                  <td>Half-PPR</td>
+                {% endif %}
               </tr>
             {% endfor %}
         </table>
