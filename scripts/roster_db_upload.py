@@ -14,9 +14,53 @@ class PlayerStats(EmbeddedDocument):
     pass_int = IntField()
     fumbles = IntField()
 
-    score_normal = DecimalField(required=True, default=0, precision=2)
-    score_half_ppr = DecimalField(required=True, default=0, precision=2)
-    score_ppr = DecimalField(required=True, default=0, precision=2)
+    score_normal = DecimalField(precision=2)
+    score_half_ppr = DecimalField(precision=2)
+    score_ppr = DecimalField(precision=2)
+
+    # Defensive stats
+    # Points allowed
+    points_allowed = IntField()
+    # Defense sacks
+    sacks = IntField()
+    # Defense interceptions
+    def_int = IntField()
+    # Defensive ints for TDs
+    def_int_td = IntField()
+    # Defense fumble recoveries
+    fumbles_rec = IntField()
+    # Defense fumbles recovered for TDs
+    fumbles_rec_td = IntField()
+    # Defense safeties (Not currently scraped)
+    safeties = IntField()
+    # Special teams tds (Not currently scraped)
+    st_tds = IntField()
+    # Special teams blocked kick (Not currently scraped)
+    st_blocked_kicks = IntField()
+    # Special teams fumble recovery (Not currently scraped)
+    st_fumble_recoveries = IntField()
+    
+    d_st_score_normal = IntField()
+
+    # Kicker Stats
+    # FG made (0-39 yd)
+    fg_0_39 = IntField()
+    # FG made (40-49 yd)
+    fg_40_49 = IntField()
+    # FG made (50-59 yd)
+    fg_50_59 = IntField()
+    # FG made (60+ yd)
+    fg_60 = IntField()
+    # FG made
+    fgm = IntField()
+    # FG attempted
+    fga = IntField()
+    # PAT Made
+    xpm = IntField()
+    # PAT Attempted
+    xpa = IntField()
+    
+    k_score_normal = IntField()
 
 class Player(Document):
     name = StringField(required=True)
@@ -45,6 +89,27 @@ def upload_all_rosters(chrome_driver):
 
     for team_abbrev in current_week_teams:
         upload_team_roster(chrome_driver, team_abbrev, url_abbrev_map[team_abbrev], team_name_map[team_abbrev])
+
+        # Handle edge cases: for some reason the site doesn't have cooper kupp or alvin kamara?
+        if team_abbrev == 'LAR':
+            player = Player(name='Cooper Kupp', 
+                    team=team_abbrev,
+                    position='WR',
+                    games_started=16,
+                    week_1_avail=True)
+            player.display_name = player.get_display_name()
+            print(player.name + ' | ' + player.team + ' | ' + player.position + ' | ' + str(player.games_started) + ' | ' + player.display_name)
+            player.save()
+        
+        if team_abbrev == 'NO':
+            player = Player(name='Alvin Kamara', 
+                    team=team_abbrev,
+                    position='RB',
+                    games_started=16,
+                    week_1_avail=True)
+            player.display_name = player.get_display_name()
+            print(player.name + ' | ' + player.team + ' | ' + player.position + ' | ' + str(player.games_started) + ' | ' + player.display_name)
+            player.save()
 
 def upload_team_roster(chrome_driver, team_abbrev, url_abbrev, team_name):
     week_1_avail = True

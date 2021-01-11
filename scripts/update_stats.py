@@ -15,7 +15,12 @@ def collect_scores(game_code, chrome_driver):
     chrome_driver.get(url)
     # html.parser slower than lxml, but no extra dependencies and should be fine
     soup = bs(chrome_driver.page_source, "html.parser")
+    collect_offensive_scores(soup)
+    collect_defensive_scores(soup)
+    collect_kicker_scores(soup)
 
+
+def collect_offensive_scores(soup):
     offense_table = soup.find("table", {"id":"player_offense"})
     rows = offense_table.find_all("tr")
 
@@ -25,26 +30,107 @@ def collect_scores(game_code, chrome_driver):
             continue
 
         name = name.text.strip()
+        team = row.find("td", {"data-stat": "team"}).text
+        print(name + ' | ' + team)
+        
         stat_list = ["pass_yds", "pass_td", "rush_yds", "rush_td",
             "rec_yds", "rec_td", "rec", "pass_int", "fumbles"]
         stats = {
             stat: int(row.find('td', {'data-stat': stat}).text)
             for stat in stat_list
         }
-        team = row.find("td", {"data-stat": "team"}).text
 
-        scores = offense_score(**stats)
+        scores = compute_offense_score(**stats)
         stats["score_normal"] = scores[0]
         stats["score_half_ppr"] = scores[1]
         stats["score_ppr"] = scores[2]
 
+        print(stats)
+
         player_stats = PlayerStats(**stats)
+        update_player_stats(name, team, player_stats)
 
-        # TODO: hard coded week 1
-        Player.objects(name=name, team=team).update_one(set__week_1_stats=player_stats)
-        # this assumes unique name/team pairs
 
-def offense_score(
+def collect_defensive_scores(soup):
+    scoring_table = soup.find("table", {"id":"scoring"})
+
+    # Get home and away team
+    vis_team = scoring_table.find("th", {"data-stat":"vis_team_score"}).text
+    home_team = scoring_table.find("th", {"data-stat":"home_team_score"}).text
+
+    vis_team_def_stats = {}
+    home_team_def_stats = {}
+
+    # Get home and away points allowed
+    final_score = scoring_table.find_all("tr")[-1]
+    vis_team_def_stats['points_allowed'] = int(final_score.find('td', {'data-stat':'home_team_score'}).text)
+    home_team_def_stats['points_allowed'] = int(final_score.find('td', {'data-stat':'vis_team_score'}).text)
+    # TODO: This doesn't account for defensive points. Make sure to subtract 6 for each defensive TD by the opposing team before computing score.
+
+    #TODO: Collect def_int_td, fumbles_rec_td, sacks, def_int, and fumbles_rec
+    
+
+def collect_kicker_scores(soup):
+    kicking_table = soup.find("table", {"id":"kicking"})
+    rows = kicking_table.find_all("tr")
+
+    # Stats to scrape directly and FG distance stats to compute
+    stat_scrape_list = ['xpm', 'xpa', 'fgm', 'fga']
+    stat_fg_yard_list = ['fg_0_39', 'fg_40_49', 'fg_50_59', 'fg_60']
+    for row in rows:
+        name = row.a
+        if not name:
+            continue
+        if row.find('td', {'data-stat': 'xpa'}).text == '' and row.find('td', {'data-stat': 'fga'}).text == '':
+            continue
+        
+        name = name.text.strip()
+        team = row.find("td", {"data-stat": "team"}).text
+        print(name + ' | ' + team)
+        
+        # Scrape all basic stats
+        stats = {}
+        for stat in stat_scrape_list:
+            stat_val = row.find('td', {'data-stat': stat}).text
+            
+            stats[stat] = int(stat_val) if stat_val != '' else 0
+        
+        # Get length of all FGs made
+        fg_yards = []
+        scoring_table = soup.find("table", {"id":"scoring"})
+        scoring_rows = scoring_table.find_all("tr")
+        
+        for score in scoring_rows:
+            if not score.find('td', {'data-stat':'description'}):
+                continue
+                
+            if score.find('td', {'data-stat':'description'}).a.text == name:
+                fg_yards.append(int(score.find('td', {'data-stat':'description'}).text.strip()[len(name)+1:len(name)+3]))
+        
+        # Bucket all FG distances
+        for fg_yard_stat in stat_fg_yard_list:
+            stats[fg_yard_stat] = 0 
+        
+        for fg_yard in fg_yards:
+            if fg_yard < 40:
+                stats['fg_0_39'] += 1
+            elif fg_yard < 50:
+                stats['fg_40_49'] += 1
+            elif fg_yard < 60:
+                stats['fg_50_59'] += 1
+            else:
+                stats['fg_60'] += 1
+        
+        kicker_score = compute_kicker_score(**stats)
+        stats["k_score_normal"] = kicker_score
+
+        print(stats)
+
+        player_stats = PlayerStats(**stats)
+        update_player_stats(name, team, player_stats)
+
+
+def compute_offense_score(
     pass_yds=0,
     pass_td=0,
     rush_yds=0,
@@ -73,11 +159,73 @@ def offense_score(
         round(base_score + rec, 2)          # PPR
     )
 
-def defense_stats():
-    pass
+def compute_defense_score(
+    points_allowed=0,
+    sacks=0,
+    def_int=0,
+    def_int_td=0,
+    fumbles_rec=0,
+    fumbles_rec_td=0,
+):
+    points_allowed_points = 0
 
-def kicker_stats():
-    pass
+    if points_allowed == 0:
+        points_allowed_points = 10
+    elif points_allowed < 7:
+        points_allowed_points = 7
+    elif points_allowed < 14:
+        points_allowed_points = 4
+    elif points_allowed < 21:
+        points_allowed_points = 1
+    elif points_allowed < 28:
+        points_allowed_points = 0
+    elif points_allowed < 35:
+        points_allowed_points = -1
+    else:
+        points_allowed_points = -4
+
+    score =  (
+        points_allowed_points
+        + sacks
+        + (def_int * 2)
+        + (def_int_td * 6)
+        + (fumbles_rec * 2)
+        + (fumbles_rec_td * 6)
+    )
+
+    return score
+
+def compute_kicker_score(
+    fg_0_39=0,
+    fg_40_49=0,
+    fg_50_59=0,
+    fg_60=0,
+    fgm=0,
+    fga=0,
+    xpm=0,
+    xpa=0,
+):
+
+    score =  (
+        (fg_0_39 * 3)
+        + (fg_40_49 * 4)
+        + (fg_50_59 * 5)
+        + (fg_60 * 5)
+        + xpm
+    )
+
+    return score
+
+def update_player_stats(name, team, player_stats):
+    # Team abbreviations aren't the same between the site we scrape and the DB. 
+    # This map from web name to db name handles any inconsistencies.
+    web_db_team_name_map = {'KAN':'KC', 'GNB':'GB', 'NOR':'NO', 'TAM':'TB'}
+
+    db_team_name = web_db_team_name_map[team] if team in web_db_team_name_map else team
+    
+    # TODO: hard coded week 1
+    Player.objects(name=name, team=db_team_name).update_one(set__week_1_stats=player_stats)
+
 
 if __name__ == "__main__":
     config = configparser.ConfigParser()
