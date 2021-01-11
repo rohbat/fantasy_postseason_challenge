@@ -67,7 +67,9 @@ def select_team(league_id):
             league = try_get_league_by_id(league_id)
             for member in league.member_list:
                 if member.account_id == current_user.id:
+                    member.week_1_team.delete()
                     member.week_1_team = fantasy_team
+                    break
             league.save()
 
             return redirect(url_for("dashboard.view_league", league_id=league_id))
