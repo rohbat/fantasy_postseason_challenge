@@ -51,26 +51,35 @@ def select_team(league_id):
     if request.method == "POST":
         if form.validate_week_1():
             #TODO: Update instead of create new object when team already exists.
-            fantasy_team = FantasyTeam(
-                QB = form.data["QB"],
-                RB1 = form.data["RB1"],
-                RB2 = form.data["RB2"],
-                WR1 = form.data["WR1"],
-                WR2 = form.data["WR2"],
-                TE = form.data["TE"],
-                FLEX = form.data["FLEX"],
-                K = form.data["K"],
-                D_ST = form.data["D_ST"]
-            )
-            fantasy_team.save()
-
             league = try_get_league_by_id(league_id)
-            for member in league.member_list:
-                if member.account_id == current_user.id:
-                    member.week_1_team.delete()
-                    member.week_1_team = fantasy_team
-                    break
-            league.save()
+            if league:
+                for member in league.member_list:
+                    if member.account_id == current_user.id:
+                        member.week_1_team.update(
+                            set__QB = ObjectId(form.data["QB"]),
+                            set__RB1 = ObjectId(form.data["RB1"]),
+                            set__RB2 = ObjectId(form.data["RB2"]),
+                            set__WR1 = ObjectId(form.data["WR1"]),
+                            set__WR2 = ObjectId(form.data["WR2"]),
+                            set__TE = ObjectId(form.data["TE"]),
+                            set__FLEX = ObjectId(form.data["FLEX"]),
+                            set__K = ObjectId(form.data["K"]),
+                            set__D_ST = ObjectId(form.data["D_ST"])
+                        )
+                        break
+            else:
+                fantasy_team = FantasyTeam(
+                    QB = form.data["QB"],
+                    RB1 = form.data["RB1"],
+                    RB2 = form.data["RB2"],
+                    WR1 = form.data["WR1"],
+                    WR2 = form.data["WR2"],
+                    TE = form.data["TE"],
+                    FLEX = form.data["FLEX"],
+                    K = form.data["K"],
+                    D_ST = form.data["D_ST"]
+                )
+                fantasy_team.save()
 
             return redirect(url_for("dashboard.view_league", league_id=league_id))
 
