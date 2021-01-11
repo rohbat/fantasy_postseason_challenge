@@ -50,36 +50,29 @@ def select_team(league_id):
     form = SelectTeamForm(request.form)
     if request.method == "POST":
         if form.validate_week_1():
-            #TODO: Update instead of create new object when team already exists.
             league = try_get_league_by_id(league_id)
             if league:
                 for member in league.member_list:
                     if member.account_id == current_user.id:
-                        member.week_1_team.update(
-                            set__QB = ObjectId(form.data["QB"]),
-                            set__RB1 = ObjectId(form.data["RB1"]),
-                            set__RB2 = ObjectId(form.data["RB2"]),
-                            set__WR1 = ObjectId(form.data["WR1"]),
-                            set__WR2 = ObjectId(form.data["WR2"]),
-                            set__TE = ObjectId(form.data["TE"]),
-                            set__FLEX = ObjectId(form.data["FLEX"]),
-                            set__K = ObjectId(form.data["K"]),
-                            set__D_ST = ObjectId(form.data["D_ST"])
-                        )
+                        if not member.week_1_team:
+                            fantasy_team = FantasyTeam()
+                            fantasy_team.save()
+                            member.week_1_team = fantasy_team
+                            league.save()
+                        else:
+                            fantasy_team = member.week_1_team
+
+                        fantasy_team.QB = ObjectId(form.data["QB"])
+                        fantasy_team.RB1 = ObjectId(form.data["RB1"])
+                        fantasy_team.RB2 = ObjectId(form.data["RB2"])
+                        fantasy_team.WR1 = ObjectId(form.data["WR1"])
+                        fantasy_team.WR2 = ObjectId(form.data["WR2"])
+                        fantasy_team.TE = ObjectId(form.data["TE"])
+                        fantasy_team.FLEX = ObjectId(form.data["FLEX"])
+                        fantasy_team.K = ObjectId(form.data["K"])
+                        fantasy_team.D_ST = ObjectId(form.data["D_ST"])
+                        fantasy_team.save()
                         break
-            else:
-                fantasy_team = FantasyTeam(
-                    QB = form.data["QB"],
-                    RB1 = form.data["RB1"],
-                    RB2 = form.data["RB2"],
-                    WR1 = form.data["WR1"],
-                    WR2 = form.data["WR2"],
-                    TE = form.data["TE"],
-                    FLEX = form.data["FLEX"],
-                    K = form.data["K"],
-                    D_ST = form.data["D_ST"]
-                )
-                fantasy_team.save()
 
             return redirect(url_for("dashboard.view_league", league_id=league_id))
 
