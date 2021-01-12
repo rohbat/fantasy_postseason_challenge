@@ -112,7 +112,6 @@ def view_league(league_id):
     league_teams = [member.week_1_team for member in league_members]
 
     positions = ["QB", "RB1", "RB2", "WR1", "WR2", "TE", "FLEX", "K", "D/ST"]
-    ['KC', 'BUF', 'PIT', 'TEN', 'BAL', 'CLE', 'IND', 'GB', 'NO', 'SEA', 'WAS', 'TB', 'LAR', 'CHI']
     team_colors = {
         'None' : ("#808080", "#FF00FF"),
         'KC' : ("#E31837", "#FFB81C"),
@@ -131,7 +130,8 @@ def view_league(league_id):
         'CHI' : ("#0B162A", "#C83803"),
     }
 
-    data = []
+    lineup_data = []
+    team_scores = []
 
     if league.ruleset == "normal":
         default_score_displayed = "score_normal"
@@ -141,8 +141,10 @@ def view_league(league_id):
         default_score_displayed = "score_half_ppr"
 
     if league_teams:
+        team_scores = [Decimal(0.00) for team in league_teams]
+
         for position in positions:
-            data.append([])
+            lineup_data.append([])
             if position == 'D/ST':
                 pos = 'D_ST'
                 score_displayed = 'd_st_score_normal'
@@ -153,22 +155,25 @@ def view_league(league_id):
                 pos = position
                 score_displayed = default_score_displayed
 
-            for team in league_teams:
+            for i, team in enumerate(league_teams):
                 if team:
                     player = getattr(team, pos)
                     name = player.display_name
                     score = getattr(player.week_1_stats, score_displayed) if player.week_1_stats else Decimal('0.00')
                     colors = team_colors[player.team]
-                    data[-1].append((name, score, *colors))
-                else:
-                    data[-1].append(('set your lineup', 0, *team_colors['None']))
+                    lineup_data[-1].append((name, score, *colors))
 
+                    team_scores[i] = team_scores[i] + score
+                else:
+                    lineup_data[-1].append(('set your lineup', 0, *team_colors['None']))
+        
     return render_template(
         "view_league.html",
         positions=positions,
         team_names=team_names,
         member_names=member_names,
-        data=data,
+        lineup_data=lineup_data,
+        team_scores=team_scores,
         league=league,
         position_width=60,
         score_width=50, # TODO: choose good values for these and put in html?

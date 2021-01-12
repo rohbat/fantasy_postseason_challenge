@@ -34,7 +34,7 @@
         </thead>
 
         <tbody>
-          {% for i, (position, row) in enumerate(zip(positions, data)) %}
+          {% for i, (position, row) in enumerate(zip(positions, lineup_data)) %}
             <tr>
               <th style="width:{{position_width}}">{{position}}</th>
               {%for col in row%}
@@ -43,6 +43,12 @@
               {% endfor %}
             </tr>
           {% endfor %}
+          <tr>
+            <th style="width:{{position_width}}">Total</th>
+            {% for score in team_scores %}
+              <td colspan="2"; style="text-align:center"><b>{{score}}</b></th>
+            {% endfor %}
+          </tr>
         </tbody>
       </table>
 
