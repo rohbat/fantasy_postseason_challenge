@@ -12,6 +12,7 @@ from bson.objectid import ObjectId
 
 from datetime import datetime
 from dateutil import tz
+from decimal import Decimal
 
 bp = Blueprint('dashboard', __name__, url_prefix='/')
 
@@ -109,8 +110,6 @@ def view_league(league_id):
     team_names = [member.team_name for member in league_members]
     member_names = [Account.objects(id=member.account_id).first().display_name for member in league_members]
     league_teams = [member.week_1_team for member in league_members]
-    print(team_names)
-    print(league_teams)
 
     positions = ["QB", "RB1", "RB2", "WR1", "WR2", "TE", "FLEX", "K", "D/ST"]
     ['KC', 'BUF', 'PIT', 'TEN', 'BAL', 'CLE', 'IND', 'GB', 'NO', 'SEA', 'WAS', 'TB', 'LAR', 'CHI']
@@ -132,19 +131,37 @@ def view_league(league_id):
         'CHI' : ("#0B162A", "#C83803"),
     }
 
-    #TODO: Refactor this.
     data = []
 
+    if league.ruleset == "normal":
+        default_score_displayed = "score_normal"
+    elif league.ruleset == "ppr":
+        default_score_displayed = "score_ppr"
+    else:
+        default_score_displayed = "score_half_ppr"
+
     if league_teams:
-        data.append([(team.QB.display_name, 0, *team_colors[team.QB.team]) if team else ('set your lineup', 0, *team_colors['None']) for team in league_teams])
-        data.append([(team.RB1.display_name, 0, *team_colors[team.RB1.team]) if team else ('set your lineup', 0, *team_colors['None']) for team in league_teams])
-        data.append([(team.RB2.display_name, 0, *team_colors[team.RB2.team]) if team else ('set your lineup', 0, *team_colors['None']) for team in league_teams])
-        data.append([(team.WR1.display_name, 0, *team_colors[team.WR1.team]) if team else ('set your lineup', 0, *team_colors['None']) for team in league_teams])
-        data.append([(team.WR2.display_name, 0, *team_colors[team.WR2.team]) if team else ('set your lineup', 0, *team_colors['None']) for team in league_teams])
-        data.append([(team.TE.display_name, 0, *team_colors[team.TE.team]) if team else ('set your lineup', 0, *team_colors['None']) for team in league_teams])
-        data.append([(team.FLEX.display_name, 0, *team_colors[team.FLEX.team]) if team else ('set your lineup', 0, *team_colors['None']) for team in league_teams])
-        data.append([(team.K.display_name, 0, *team_colors[team.K.team]) if team else ('set your lineup', 0, *team_colors['None']) for team in league_teams])
-        data.append([(team.D_ST.display_name, 0, *team_colors[team.D_ST.team]) if team else ('set your lineup', 0, *team_colors['None']) for team in league_teams])
+        for position in positions:
+            data.append([])
+            if position == 'D/ST':
+                pos = 'D_ST'
+                score_displayed = 'd_st_score_normal'
+            elif position == 'K':
+                pos = position
+                score_displayed = 'k_score_normal'
+            else:
+                pos = position
+                score_displayed = default_score_displayed
+
+            for team in league_teams:
+                if team:
+                    player = getattr(team, pos)
+                    name = player.display_name
+                    score = getattr(player.week_1_stats, score_displayed) if player.week_1_stats else Decimal('0.00')
+                    colors = team_colors[player.team]
+                    data[-1].append((name, score, *colors))
+                else:
+                    data[-1].append(('set your lineup', 0, *team_colors['None']))
 
     return render_template(
         "view_league.html",
