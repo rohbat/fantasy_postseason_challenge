@@ -39,7 +39,7 @@
               <th style="width:{{position_width}}">{{position}}</th>
               {%for col in row%}
                 <td style="background-color:{{col[2]}};color:{{col[3]}};width:{{name_width}}px;">{{col[0]}}</td>
-                <td style="width:{{score_width}}">{{col[1]}}</td>
+                <td style="width:{{score_width}};text-align:right;">{{col[1]}}</td>
               {% endfor %}
             </tr>
           {% endfor %}

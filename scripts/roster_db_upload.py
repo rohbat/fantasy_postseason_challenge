@@ -40,7 +40,7 @@ class PlayerStats(EmbeddedDocument):
     # Special teams fumble recovery (Not currently scraped)
     st_fumble_recoveries = IntField()
     
-    d_st_score_normal = IntField()
+    d_st_score_normal = DecimalField(precision=2)
 
     # Kicker Stats
     # FG made (0-39 yd)
@@ -60,7 +60,7 @@ class PlayerStats(EmbeddedDocument):
     # PAT Attempted
     xpa = IntField()
     
-    k_score_normal = IntField()
+    k_score_normal = DecimalField(precision=2)
 
 class Player(Document):
     name = StringField(required=True)
