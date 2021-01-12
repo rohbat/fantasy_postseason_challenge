@@ -3,11 +3,19 @@ from bs4 import BeautifulSoup as bs
 from mongoengine import *
 import shutil
 import configparser
+import pandas as pd
 
 from roster_db_upload import Player, PlayerStats
 
-# TODO: edit with correct games
-GAMES_TO_COLLECT = ["202101030cle"]
+# WEEK 1
+GAMES_TO_COLLECT = [
+    '202101090buf',
+    '202101090sea',
+    '202101090was',
+    '202101100nor',
+    '202101100oti',
+    '202101100pit',
+]
 
 def collect_scores(game_code, chrome_driver):
     url = f"https://www.pro-football-reference.com/boxscores/{game_code}.htm"
@@ -18,7 +26,6 @@ def collect_scores(game_code, chrome_driver):
     collect_offensive_scores(soup)
     collect_defensive_scores(soup)
     collect_kicker_scores(soup)
-
 
 def collect_offensive_scores(soup):
     offense_table = soup.find("table", {"id":"player_offense"})
@@ -50,7 +57,6 @@ def collect_offensive_scores(soup):
         player_stats = PlayerStats(**stats)
         update_player_stats(name, team, player_stats)
 
-
 def collect_defensive_scores(soup):
     scoring_table = soup.find("table", {"id":"scoring"})
 
@@ -61,14 +67,60 @@ def collect_defensive_scores(soup):
     vis_team_def_stats = {}
     home_team_def_stats = {}
 
+    defense_table = soup.find('table', {'id': 'player_defense'})
+    # df_ugly is table as parsed by pd, df is table with correct columns that can
+    # be summed by team and directly converted to dict of desired values
+    df_ugly = pd.read_html(str(defense_table))[0]
+    df = pd.DataFrame()
+    df['team'] = df_ugly['Unnamed: 1_level_0']['Tm']
+    df['def_int_td'] = df_ugly['Def Interceptions']['TD']
+    df['fumbles_rec_td'] = df_ugly['Fumbles']['TD']
+    df['sacks'] = df_ugly['Unnamed: 7_level_0']['Sk']
+    df['def_int'] = df_ugly['Def Interceptions']['Int']
+    df['fumbles_rec'] = df_ugly['Fumbles']['FR']
+    df.dropna(axis=0, inplace=True)
+    df = df[df.team != 'Tm']
+    df = df.astype({
+        'def_int_td': int,
+        'fumbles_rec_td': int,
+        'sacks': float,
+        'def_int': int,
+        'fumbles_rec': int
+    })
+
+    vis_team_def_stats.update(dict(df[df.team==vis_team].sum()))
+    home_team_def_stats.update(dict(df[df.team==home_team].sum()))
+    vis_team_def_stats.pop('team')
+    home_team_def_stats.pop('team')
+
     # Get home and away points allowed
     final_score = scoring_table.find_all("tr")[-1]
     vis_team_def_stats['points_allowed'] = int(final_score.find('td', {'data-stat':'home_team_score'}).text)
     home_team_def_stats['points_allowed'] = int(final_score.find('td', {'data-stat':'vis_team_score'}).text)
-    # TODO: This doesn't account for defensive points. Make sure to subtract 6 for each defensive TD by the opposing team before computing score.
+    # correct for defensive touchdowns
+    vis_team_def_stats['points_allowed'] -= 6 * (home_team_def_stats['def_int_td'] + home_team_def_stats['fumbles_rec_td'])
+    home_team_def_stats['points_allowed'] -= 6 * (vis_team_def_stats['def_int_td'] + vis_team_def_stats['fumbles_rec_td'])
 
-    #TODO: Collect def_int_td, fumbles_rec_td, sacks, def_int, and fumbles_rec
+    vis_team_def_stats['d_st_score_normal'] = compute_defense_score(**vis_team_def_stats)
+    home_team_def_stats['d_st_score_normal'] = compute_defense_score(**home_team_def_stats)
+
+
+    web_db_team_name_map = {'KAN':'KC', 'GNB':'GB', 'NOR':'NO', 'TAM':'TB'}
+    team_name_map = {'KC':'Chiefs', 'BUF':'Bills', 'PIT':'Steelers', 'TEN':'Titans', 'BAL':'Ravens', 'CLE':'Browns', 'IND':'Colts',
+                     'GB':'Packers', 'NO':'Saints', 'SEA':'Seahawks', 'WAS':'Football Team', 'TB':'Buccaneers', 'LAR':'Rams', 'CHI':'Bears'}
+
+    vis_player_stats = PlayerStats(**vis_team_def_stats)
+    home_player_stats = PlayerStats(**home_team_def_stats)
+
+    vis_team_full = team_name_map[web_db_team_name_map.get(vis_team, vis_team)]
+    update_player_stats(f'{vis_team_full} D/ST', vis_team, vis_player_stats)
+    home_team_full = team_name_map[web_db_team_name_map.get(home_team, home_team)]
+    update_player_stats(f'{home_team_full} D/ST', home_team, home_player_stats)  
     
+    print(f'{vis_team_full} D/ST', '|', vis_team)
+    print(vis_team_def_stats)
+    print(f'{home_team_full} D/ST', '|', home_team)
+    print(home_team_def_stats)
 
 def collect_kicker_scores(soup):
     kicking_table = soup.find("table", {"id":"kicking"})
