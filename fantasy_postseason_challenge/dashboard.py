@@ -109,7 +109,6 @@ def view_league(league_id):
 
     team_names = [member.team_name for member in league_members]
     member_names = [Account.objects(id=member.account_id).first().display_name for member in league_members]
-    league_teams = [member.week_1_team for member in league_members]
 
     positions = ["QB", "RB1", "RB2", "WR1", "WR2", "TE", "FLEX", "K", "D/ST"]
     ['KC', 'BUF', 'PIT', 'TEN', 'BAL', 'CLE', 'IND', 'GB', 'NO', 'SEA', 'WAS', 'TB', 'LAR', 'CHI']
@@ -131,8 +130,6 @@ def view_league(league_id):
         'CHI' : ("#0B162A", "#C83803"),
     }
 
-    data = []
-
     if league.ruleset == "normal":
         default_score_displayed = "score_normal"
     elif league.ruleset == "ppr":
@@ -140,28 +137,41 @@ def view_league(league_id):
     else:
         default_score_displayed = "score_half_ppr"
 
-    if league_teams:
-        for position in positions:
-            data.append([])
-            if position == 'D/ST':
-                pos = 'D_ST'
-                score_displayed = 'd_st_score_normal'
-            elif position == 'K':
-                pos = position
-                score_displayed = 'k_score_normal'
-            else:
-                pos = position
-                score_displayed = default_score_displayed
+    data = []
 
-            for team in league_teams:
-                if team:
-                    player = getattr(team, pos)
-                    name = player.display_name
-                    score = getattr(player.week_1_stats, score_displayed) if player.week_1_stats else Decimal('0.00')
-                    colors = team_colors[player.team]
-                    data[-1].append((name, score, *colors))
+    for week in range(1, 3):
+        print(week)
+        league_teams = [getattr(member, f'week_{week}_team', None) for member in league_members]
+        week_data = []
+        if league_teams:
+            for position in positions:
+                week_data.append([])
+                if position == 'D/ST':
+                    pos = 'D_ST'
+                    score_displayed = 'd_st_score_normal'
+                elif position == 'K':
+                    pos = position
+                    score_displayed = 'k_score_normal'
                 else:
-                    data[-1].append(('set your lineup', 0, *team_colors['None']))
+                    pos = position
+                    score_displayed = default_score_displayed
+
+                for team in league_teams:
+                    print('here')
+                    if team:
+                        player = getattr(team, pos)
+                        name = player.display_name
+                        score = getattr(getattr(player, f'week_{week}_stats'), score_displayed) if getattr(player, f'week_{week}_stats') else Decimal('0.00')
+                        colors = team_colors[player.team]
+                        week_data[-1].append((name, score, *colors))
+                    else:
+                        week_data[-1].append(('set your lineup', 0, *team_colors['None']))
+        else:
+            week_data = [('set your lineup', 0, *team_colors['None'])] * len(positions)
+        data.append(week_data)
+    print()
+    print(data[0])
+    print(data[1])
 
     return render_template(
         "view_league.html",
@@ -175,7 +185,9 @@ def view_league(league_id):
         name_width=180, # TODO: choose good values for these and put in html?
         zip=zip,
         enumerate=enumerate,
-        len=len
+        len=len,
+        list=list,
+        reversed=reversed
     )
 
 @bp.route("/new_league", methods=("GET", "POST"))
