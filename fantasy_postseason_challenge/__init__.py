@@ -40,4 +40,12 @@ def create_app(test_config=None):
     app.register_blueprint(auth.bp)
     app.register_blueprint(dashboard.bp)
 
+    app.jinja_env.globals.update(
+        zip=zip,
+        enumerate=enumerate,
+        len=len,
+        list=list,
+        reversed=reversed
+    )
+
     return app

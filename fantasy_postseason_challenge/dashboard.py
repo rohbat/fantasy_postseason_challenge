@@ -36,7 +36,6 @@ def logged_in_homepage():
         league_memberships=league_memberships,
         team_names=team_names,
         league_commissionerships=league_commissionerships,
-        zip=zip,
     )
 
 @bp.route("/select_team/<league_id>", methods=("GET", "POST"))
@@ -180,11 +179,6 @@ def view_league(league_id):
         position_width=60,
         score_width=50, # TODO: choose good values for these and put in html?
         name_width=180, # TODO: choose good values for these and put in html?
-        zip=zip,
-        enumerate=enumerate,
-        len=len,
-        list=list,
-        reversed=reversed
     )
 
 @bp.route("/new_league", methods=("GET", "POST"))
