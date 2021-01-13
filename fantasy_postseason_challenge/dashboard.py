@@ -81,21 +81,38 @@ def select_team(league_id):
             e = "Invalid team composition"
             flash(e)
 
-    qbs = sorted(Player.objects(**{'position': 'QB', f'week_{week}_avail': True}), key=lambda x: x.games_started, reverse=True)
-    rbs = sorted(Player.objects(**{'position': 'RB', f'week_{week}_avail': True}), key=lambda x: x.games_started, reverse=True)
-    wrs = sorted(Player.objects(**{'position': 'WR', f'week_{week}_avail': True}), key=lambda x: x.games_started, reverse=True)
-    tes = sorted(Player.objects(**{'position': 'TE', f'week_{week}_avail': True}), key=lambda x: x.games_started, reverse=True)
-    ks = sorted(Player.objects(**{'position': 'K', f'week_{week}_avail': True}), key=lambda x: x.games_started, reverse=True)
-    d_sts = sorted(Player.objects(**{'position': 'D/ST', f'week_{week}_avail': True}), key=lambda x: x.games_started, reverse=True)
+    qbs = sorted(Player.objects(**{'position': 'QB', f'week_{week}_avail': True}), key=lambda x: (x.team, x.games_started), reverse=True)
+    rbs = sorted(Player.objects(**{'position': 'RB', f'week_{week}_avail': True}), key=lambda x: (x.team, x.games_started), reverse=True)
+    wrs = sorted(Player.objects(**{'position': 'WR', f'week_{week}_avail': True}), key=lambda x: (x.team, x.games_started), reverse=True)
+    tes = sorted(Player.objects(**{'position': 'TE', f'week_{week}_avail': True}), key=lambda x: (x.team, x.games_started), reverse=True)
+    ks = sorted(Player.objects(**{'position': 'K', f'week_{week}_avail': True}), key=lambda x: (x.team, x.games_started), reverse=True)
+    d_sts = sorted(Player.objects(**{'position': 'D/ST', f'week_{week}_avail': True}), key=lambda x: (x.team, x.games_started), reverse=True)
 
     form.QB.choices = [(qb.id, qb.display_name) for qb in qbs]
     form.RB1.choices = form.RB2.choices = [(rb.id, rb.display_name) for rb in rbs]
     form.WR1.choices = form.WR2.choices = [(wr.id, wr.display_name) for wr in wrs]
     form.TE.choices = [(te.id, te.display_name) for te in tes]
-    form.FLEX.choices = [(flex.id, flex.display_name) for flex in sorted(rbs + wrs + tes, key=lambda x: x.games_started, reverse=True)]
+    form.FLEX.choices = [(flex.id, flex.display_name) for flex in sorted(rbs + wrs + tes, key=lambda x: (x.team, x.games_started), reverse=True)]
     form.K.choices = [(k.id, k.display_name) for k in ks]
     form.D_ST.choices = [(d_st.id, d_st.display_name) for d_st in d_sts]
 
+    # TODO: Might be able to refactor this by consolidating with some of the code in POST
+    league = try_get_league_by_id(league_id)
+    if league:
+        for member in league.member_list:
+            if member.account_id == current_user.id:
+                current_team = getattr(member, f'week_{week}_team', None)
+                if current_team:
+                    form.QB.default = current_team.QB.id
+                    form.RB1.default = current_team.RB1.id
+                    form.RB2.default = current_team.RB2.id
+                    form.WR1.default = current_team.WR1.id
+                    form.WR2.default = current_team.WR2.id
+                    form.FLEX.default = current_team.FLEX.id
+                    form.K.default = current_team.K.id
+                    form.D_ST.default = current_team.D_ST.id
+                    form.process()
+    
     return render_template("select_team.html", form=form)
 
 
