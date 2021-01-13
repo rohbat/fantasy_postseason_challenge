@@ -13,6 +13,8 @@ class PlayerStats(EmbeddedDocument):
     rec = IntField()
     pass_int = IntField()
     fumbles = IntField()
+    two_pt_conversions = IntField()
+
 
     score_normal = DecimalField(precision=2)
     score_half_ppr = DecimalField(precision=2)

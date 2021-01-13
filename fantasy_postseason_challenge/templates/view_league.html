@@ -17,6 +17,7 @@
       <a href="{{url_for('dashboard.logged_in_homepage')}}">Go back</a>
       <a href="{{url_for('dashboard.select_team', league_id=league.id)}}"> Select your team</a>
 
+
       {% with messages = get_flashed_messages() %}
         {% if messages %}
           {% for message in messages %}
@@ -25,13 +26,13 @@
         {% endif %}
       {% endwith %}<br>
 
-      {% for i, week_data in reversed(list(enumerate(data))) %}
+      {% for i, week_data in reversed(list(enumerate(lineup_data))) %}
         {% if i == 0 %}
           <h3>Wild Card Weekend</h3>
         {% elif i == 1 %}
           <h3>Divisional Round</h3>
         {% else %}
-          <h3>IDK WHAT TO CALL WEEK 3</h3>
+          <h3>Conference Championships</h3>
         {% endif %}
 
         <table class="your-team">
@@ -60,6 +61,12 @@
                 {% endfor %}
               </tr>
             {% endfor %}
+            <tr>
+            <th style="width:{{position_width}}">Total</th>
+            {% for score in team_scores[i] %}
+              <td colspan="2"; style="text-align:center"><b>{{score}}</b></th>
+            {% endfor %}
+            </tr>
           </tbody>
         </table>        
 

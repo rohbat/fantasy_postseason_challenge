@@ -111,7 +111,6 @@ def view_league(league_id):
     member_names = [Account.objects(id=member.account_id).first().display_name for member in league_members]
 
     positions = ["QB", "RB1", "RB2", "WR1", "WR2", "TE", "FLEX", "K", "D/ST"]
-    ['KC', 'BUF', 'PIT', 'TEN', 'BAL', 'CLE', 'IND', 'GB', 'NO', 'SEA', 'WAS', 'TB', 'LAR', 'CHI']
     team_colors = {
         'None' : ("#808080", "#FF00FF"),
         'KC' : ("#E31837", "#FFB81C"),
@@ -130,6 +129,9 @@ def view_league(league_id):
         'CHI' : ("#0B162A", "#C83803"),
     }
 
+    lineup_data = []
+    team_scores = []
+
     if league.ruleset == "normal":
         default_score_displayed = "score_normal"
     elif league.ruleset == "ppr":
@@ -137,13 +139,13 @@ def view_league(league_id):
     else:
         default_score_displayed = "score_half_ppr"
 
-    data = []
-
     # TODO: un-hardcode 3
     for week in range(1, 3):
         league_teams = [getattr(member, f'week_{week}_team', None) for member in league_members]
         week_data = []
         if league_teams:
+            week_scores = [Decimal(0.00) for team in league_teams]
+            
             for position in positions:
                 week_data.append([])
                 if position == 'D/ST':
@@ -156,25 +158,28 @@ def view_league(league_id):
                     pos = position
                     score_displayed = default_score_displayed
 
-                for team in league_teams:
+                for i, team in enumerate(league_teams):
                     if team:
                         player = getattr(team, pos)
                         name = player.display_name
                         score = getattr(getattr(player, f'week_{week}_stats'), score_displayed) if getattr(player, f'week_{week}_stats') else Decimal('0.00')
                         colors = team_colors[player.team]
                         week_data[-1].append((name, score, *colors))
+                        week_scores[i] = team_scores[i] + score
                     else:
                         week_data[-1].append(('set your lineup', 0, *team_colors['None']))
         else:
             week_data = [('set your lineup', 0, *team_colors['None'])] * len(positions)
-        data.append(week_data)
-
+        lineup_data.append(week_data)
+        team_scores.append(week_scores)
+        
     return render_template(
         "view_league.html",
         positions=positions,
         team_names=team_names,
         member_names=member_names,
-        data=data,
+        lineup_data=lineup_data,
+        team_scores=team_scores,
         league=league,
         position_width=60,
         score_width=50, # TODO: choose good values for these and put in html?

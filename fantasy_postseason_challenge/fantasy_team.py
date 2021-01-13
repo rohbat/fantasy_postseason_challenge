@@ -10,6 +10,7 @@ class PlayerStats(db.EmbeddedDocument):
     rec = db.IntField()
     pass_int = db.IntField()
     fumbles = db.IntField()
+    two_pt_conversions = db.IntField()
 
     score_normal = db.DecimalField(precision=2)
     score_half_ppr = db.DecimalField(precision=2)
