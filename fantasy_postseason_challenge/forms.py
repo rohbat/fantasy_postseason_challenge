@@ -19,13 +19,11 @@ class SelectTeamForm(Form):
     # https://wtforms.readthedocs.io/en/2.3.x/validators/#custom-validators
     def validate_week_1(self):
         players = Player.objects(id__in=[ObjectId(player) for player in self.data.values()])
+        # one player per team--innately ensures all unique players
+        return len({player.team for player in players}) == 9
 
-        # one player per team
-        if len({player.team for player in players}) < len(self.data):
-            return False
-
-        # # unique players at all positions--first condition covers this as well
-        # if len({player.display_name for player in players}) < len(self.data):
-        #     return False
-
-        return True
+    def validate_week_2(self):
+        players = Player.objects(id__in=[ObjectId(player) for player in self.data.values()])
+        # 8 teams total--one player per team for 7 teams, two players from last team
+        # also much have 9 unique players
+        return len(players) == 9 and len({player.team for player in players}) == 8
