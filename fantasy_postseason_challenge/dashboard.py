@@ -108,6 +108,7 @@ def select_team(league_id):
                     form.RB2.default = current_team.RB2.id
                     form.WR1.default = current_team.WR1.id
                     form.WR2.default = current_team.WR2.id
+                    form.TE.default = current_team.TE.id
                     form.FLEX.default = current_team.FLEX.id
                     form.K.default = current_team.K.id
                     form.D_ST.default = current_team.D_ST.id
