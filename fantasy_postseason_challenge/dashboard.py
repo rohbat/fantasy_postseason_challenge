@@ -165,7 +165,7 @@ def view_league(league_id):
                         score = getattr(getattr(player, f'week_{week}_stats'), score_displayed) if getattr(player, f'week_{week}_stats') else Decimal('0.00')
                         colors = team_colors[player.team]
                         week_data[-1].append((name, score, *colors))
-                        week_scores[i] = team_scores[i] + score
+                        week_scores[i] += score
                     else:
                         week_data[-1].append(('set your lineup', 0, *team_colors['None']))
         else:
