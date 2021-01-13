@@ -36,11 +36,19 @@
               <tr>
                 <th>League Name</th>
                 <th>League Id</th>
+                <th>Ruleset</th>
               </tr>
               {% for league in league_commissionerships %}
                 <tr>
                   <td><a href="{{url_for('dashboard.view_league', league_id=league.id)}}">{{ league.league_name }}</a></td>
                   <td>{{ league.id }}</td>
+                  {% if league.ruleset == 'normal' %}
+                    <td>Normal</td>
+                  {% elif league.ruleset == 'ppr' %}
+                    <td>PPR</td>
+                  {% else %}
+                    <td>Half-PPR</td>
+                  {% endif %}
                 </tr>
               {% endfor %}
             </table>
@@ -50,7 +58,7 @@
         <div class="button-wrapper">
           <a class="btn btn-primary" href="{{url_for('dashboard.new_league')}}">Create new league</a><br>
           <a class="btn btn-primary" href="{{url_for('dashboard.join_league')}}">Join a league</a><br>
-          <a class="btn btn-primary" href="{{url_for('auth.logout')}}">log out</a><br>
+          <a class="btn btn-primary" href="{{url_for('auth.logout')}}">Log out</a><br>
         </div>
 
         {% with messages = get_flashed_messages() %}
