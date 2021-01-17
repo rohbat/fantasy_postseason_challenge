@@ -42,10 +42,19 @@ def logged_in_homepage():
 @login_required
 def select_team(league_id):
     # first game of first week @ Jan 9, 1:05 pm ET -> 6:05 pm UTC
-    # if datetime.now(tz.UTC) > datetime(2021, 1, 9, 18, 5, tzinfo=tz.UTC):
-    #     e = "Picks have locked for this week"
-    #     flash(e)
-    #     return redirect(url_for("dashboard.view_league", league_id=league_id))
+    '''
+    if datetime.now(tz.UTC) > datetime(2021, 1, 9, 18, 5, tzinfo=tz.UTC):
+        e = "Picks have locked for this week"
+        flash(e)
+        return redirect(url_for("dashboard.view_league", league_id=league_id))
+    week = 1
+    '''
+
+    # first game of second week @ Jan 16, 4:35 pm ET -> 9:35 pm UTC
+    if datetime.now(tz.UTC) > datetime(2021, 1, 16, 21, 35, tzinfo=tz.UTC):
+        e = "Picks have locked for this week"
+        flash(e)
+        return redirect(url_for("dashboard.view_league", league_id=league_id))
     week = 2
 
     form = SelectTeamForm(request.form)
