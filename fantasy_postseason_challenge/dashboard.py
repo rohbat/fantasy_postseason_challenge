@@ -203,8 +203,6 @@ def view_league(league_id):
     
     playoff_scores.append(team_scores[0])
     playoff_scores.append([team_scores[0][i] + team_scores[1][i] for i in range(len(team_scores[0]))])
-
-    print(playoff_scores)
         
     return render_template(
         "view_league.html",
