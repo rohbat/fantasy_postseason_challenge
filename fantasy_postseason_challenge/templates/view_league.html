@@ -62,11 +62,17 @@
               </tr>
             {% endfor %}
             <tr>
-            <th style="width:{{position_width}}">Total</th>
+            <th style="width:{{position_width}}">Week</th>
             {% for score in team_scores[i] %}
               <td colspan="2"; style="text-align:center"><b>{{score}}</b></th>
             {% endfor %}
             </tr>
+            <tr>
+              <th style="width:{{position_width}}">Playoff</th>
+              {% for score in playoff_scores[i] %}
+                <td colspan="2"; style="text-align:center"><b>{{score}}</b></th>
+              {% endfor %}
+              </tr>
           </tbody>
         </table>
 
