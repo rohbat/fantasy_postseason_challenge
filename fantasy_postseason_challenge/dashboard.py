@@ -158,6 +158,7 @@ def view_league(league_id):
 
     lineup_data = []
     team_scores = []
+    playoff_scores = []
 
     if league.ruleset == "normal":
         default_score_displayed = "score_normal"
@@ -199,6 +200,11 @@ def view_league(league_id):
             week_data = [('set your lineup', 0, *team_colors['None'])] * len(positions)
         lineup_data.append(week_data)
         team_scores.append(week_scores)
+    
+    playoff_scores.append(team_scores[0])
+    playoff_scores.append([team_scores[0][i] + team_scores[1][i] for i in range(len(team_scores[0]))])
+
+    print(playoff_scores)
         
     return render_template(
         "view_league.html",
@@ -207,6 +213,7 @@ def view_league(league_id):
         member_names=member_names,
         lineup_data=lineup_data,
         team_scores=team_scores,
+        playoff_scores=playoff_scores,
         league=league,
         position_width=60,
         score_width=50, # TODO: choose good values for these and put in html?

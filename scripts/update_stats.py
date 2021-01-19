@@ -7,14 +7,14 @@ import pandas as pd
 
 from roster_db_upload import Player, PlayerStats
 
-# WEEK 1
+WEEK = 2
+
+# WEEK 2 GAMES
 GAMES_TO_COLLECT = [
-    '202101090buf',
-    '202101090sea',
-    '202101090was',
-    '202101100nor',
-    '202101100oti',
-    '202101100pit',
+    '202101160buf',
+    '202101170kan',
+    '202101160gnb',
+    '202101170nor'
 ]
 
 def collect_scores(game_code, chrome_driver):
@@ -275,8 +275,13 @@ def update_player_stats(name, team, player_stats):
 
     db_team_name = web_db_team_name_map[team] if team in web_db_team_name_map else team
     
-    # TODO: hard coded week 1
-    Player.objects(name=name, team=db_team_name).update_one(set__week_1_stats=player_stats)
+    player = Player.objects(name=name, team=db_team_name).first()
+
+    if player:
+        setattr(player, f'week_{WEEK}_stats', player_stats)
+        player.save()
+    else:
+        print('PLAYER NOT FOUND: ' + name)
 
 
 if __name__ == "__main__":
@@ -290,8 +295,6 @@ if __name__ == "__main__":
     chrome_driver_path = shutil.which("chromedriver")
     chrome_driver = webdriver.Chrome(options=options, executable_path=chrome_driver_path)
 
-
-    week = 1
     for game in GAMES_TO_COLLECT:
         collect_scores(game, chrome_driver)
 
