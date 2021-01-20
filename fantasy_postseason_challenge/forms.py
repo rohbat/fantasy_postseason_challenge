@@ -27,3 +27,14 @@ class SelectTeamForm(Form):
         # 8 teams total--one player per team for 7 teams, two players from last team
         # also much have 9 unique players
         return len(players) == 9 and len({player.team for player in players}) == 8
+
+    def validate_week_3(self):
+        players = Player.objects(id__in=[ObjectId(player) for player in self.data.values()])
+        teams = [player.team for player in players]
+        
+        teams_dict = {}
+        for team in teams:
+            teams_dict[team] = teams_dict.get(team, 0) + 1
+        
+        return len(players) == 9 and len(teams_dict) == 4 and all(count >= 2 for count in teams_dict.values())
+    

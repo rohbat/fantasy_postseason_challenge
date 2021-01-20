@@ -48,4 +48,7 @@ def create_app(test_config=None):
         reversed=reversed
     )
 
+    # EDIT WEEK VALUE HERE
+    app.WEEK = 3
+
     return app

@@ -1,5 +1,5 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for
+    Blueprint, flash, g, redirect, render_template, request, session, url_for, current_app
 )
 from flask_login import login_user, login_required, logout_user, current_user
 
@@ -41,21 +41,13 @@ def logged_in_homepage():
 @bp.route("/select_team/<league_id>", methods=("GET", "POST"))
 @login_required
 def select_team(league_id):
-    # first game of first week @ Jan 9, 1:05 pm ET -> 6:05 pm UTC
-    '''
-    if datetime.now(tz.UTC) > datetime(2021, 1, 9, 18, 5, tzinfo=tz.UTC):
+    # first game of third week @ Jan 24, 3:05 pm ET -> 8:05 pm UTC
+    if datetime.now(tz.UTC) > datetime(2021, 1, 24, 20, 5, tzinfo=tz.UTC):
         e = "Picks have locked for this week"
         flash(e)
         return redirect(url_for("dashboard.view_league", league_id=league_id))
-    week = 1
-    '''
 
-    # first game of second week @ Jan 16, 4:35 pm ET -> 9:35 pm UTC
-    if datetime.now(tz.UTC) > datetime(2021, 1, 16, 21, 35, tzinfo=tz.UTC):
-        e = "Picks have locked for this week"
-        flash(e)
-        return redirect(url_for("dashboard.view_league", league_id=league_id))
-    week = 2
+    week = current_app.WEEK
 
     form = SelectTeamForm(request.form)
     if request.method == "POST":
@@ -167,8 +159,7 @@ def view_league(league_id):
     else:
         default_score_displayed = "score_half_ppr"
 
-    # TODO: un-hardcode 3
-    for week in range(1, 3):
+    for week in range(1, current_app.WEEK + 1):
         league_teams = [getattr(member, f'week_{week}_team', None) for member in league_members]
         week_data = []
         if league_teams:
@@ -200,10 +191,13 @@ def view_league(league_id):
             week_data = [('set your lineup', 0, *team_colors['None'])] * len(positions)
         lineup_data.append(week_data)
         team_scores.append(week_scores)
-    
-    playoff_scores.append(team_scores[0])
-    playoff_scores.append([team_scores[0][i] + team_scores[1][i] for i in range(len(team_scores[0]))])
-        
+
+    # cum sum
+    playoff_scores = [
+        [sum(team_scores[week][i] for week in range(until_week)) for i in range(len(league_members))]
+        for until_week in range(1, current_app.WEEK + 1)
+    ]
+
     return render_template(
         "view_league.html",
         positions=positions,
