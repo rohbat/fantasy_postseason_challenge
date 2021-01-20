@@ -3,11 +3,11 @@ import configparser
 
 from roster_db_upload import Player
 
-WEEK_2_TEAMS = ['KC', 'BUF', 'BAL', 'CLE', 'GB', 'NO', 'TB', 'LAR']
+WEEK = 3
+WEEK_3_TEAMS = ['TB', 'GB', 'BUF', 'KC']
 
-def update_week_2():
-    Player.objects(team__in=WEEK_2_TEAMS).update(set__week_2_avail=True)
-
+def update_week():
+    Player.objects(team__in=globals()[f'WEEK_{WEEK}_TEAMS']).update(**{f'set__week_{WEEK}_avail': True})
 
 if __name__ == '__main__':
     config = configparser.ConfigParser()
@@ -15,4 +15,4 @@ if __name__ == '__main__':
     mongo_host = config['DEFAULT']['MONGODB_HOST']
     connect(host=mongo_host)
 
-    update_week_2()
+    update_week()
