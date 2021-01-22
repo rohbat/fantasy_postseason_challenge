@@ -151,6 +151,7 @@ def view_league(league_id):
     lineup_data = []
     team_scores = []
     playoff_scores = []
+    player_score_memo = {}
 
     if league.ruleset == "normal":
         default_score_displayed = "score_normal"
@@ -158,7 +159,6 @@ def view_league(league_id):
         default_score_displayed = "score_ppr"
     else:
         default_score_displayed = "score_half_ppr"
-
     for week in range(1, current_app.WEEK + 1):
         league_teams = [getattr(member, f'week_{week}_team', None) for member in league_members]
         week_data = []
@@ -181,7 +181,17 @@ def view_league(league_id):
                     if team:
                         player = getattr(team, pos)
                         name = player.display_name
-                        score = getattr(getattr(player, f'week_{week}_stats'), score_displayed) if getattr(player, f'week_{week}_stats') else Decimal('0.00')
+
+                        if (player.id, week) in player_score_memo:
+                            score = player_score_memo[(player.id, week)]
+                        else:
+                            player_stats = getattr(player, f'week_{week}_stats', None)
+                            if not player_stats:
+                                score = Decimal('0.00')
+                            else:
+                                score = getattr(player_stats, score_displayed)
+                            player_score_memo[(player.id, week)] = score
+
                         colors = team_colors[player.team]
                         week_data[-1].append((name, score, *colors))
                         week_scores[i] += score
