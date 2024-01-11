@@ -1,4 +1,4 @@
-from .db import db
+from ..db import db
 from .fantasy_team import FantasyTeam
 
 class Member(db.EmbeddedDocument):

@@ -1,5 +1,5 @@
 from .db import db
-from .league import League
+from .classes.league import League
 
 class Account(db.Document):
     username = db.StringField(required=True, unique=True)
@@ -18,3 +18,4 @@ class Account(db.Document):
 
     def get_id(self):
         return self.username
+    pass

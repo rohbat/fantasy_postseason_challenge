@@ -1,4 +1,4 @@
-from .db import db
+from ..db import db
 
 class PlayerStats(db.EmbeddedDocument):
     pass_yds = db.IntField()
