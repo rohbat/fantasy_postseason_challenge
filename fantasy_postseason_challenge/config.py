@@ -5,7 +5,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-MONGODB_HOST = f"mongodb+srv://thepaulonascimento:{os.getenv('MONGO_DB_PW')}@postseasonchallenge.drcj3it.mongodb.net/psc_test?retryWrites=true&w=majority"
+MONGODB_HOST = f"mongodb+srv://thepaulonascimento:{os.getenv('MONGO_DB_PW')}@postseasonchallenge.drcj3it.mongodb.net/"
+#psc_test?retryWrites=true&w=majority"
 
 PLAYOFF_START_TIMES = {
     'wildcard': datetime(2024, 1, 13, 13, 5, tzinfo=tz.UTC),
@@ -22,7 +23,7 @@ class Config:
 class DevelopmentConfig(Config):
     DEBUG = True
     MONGODB_SETTINGS = {
-        'host': MONGODB_HOST,  # Read from .env file
+        'host': f"{MONGODB_HOST}psc_test?retryWrites=true&w=majority",  # Read from .env file
         'alias': 'psc_test',
         # Add other connection settings as needed
     }
@@ -30,7 +31,7 @@ class DevelopmentConfig(Config):
 class ProductionConfig(Config):
     # Production specific configuration
     MONGODB_SETTINGS = {
-        'host': MONGODB_HOST,
+        'host': f"{MONGODB_HOST}psc_prod?retryWrites=true&w=majority"
         'alias': 'psc_prod',
         # Add other connection settings as needed
     }

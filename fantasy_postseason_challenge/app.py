@@ -12,8 +12,11 @@ def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__)
 
-    app.config.from_object(DevelopmentConfig)
-
+     if os.getenv('FLASK_ENV') == 'production':
+        app.config.from_object(ProductionConfig)
+    else:
+        app.config.from_object(DevelopmentConfig)
+        
     initialize_db(app)
 
     login_manager = LoginManager()
