@@ -1,6 +1,7 @@
 import os
 from .db import initialize_db
-from .account import Account
+from .config import DevelopmentConfig
+from .classes.user import User
 
 from flask import Flask, request, redirect
 from flask_login import LoginManager
@@ -11,12 +12,7 @@ def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__)
 
-    if test_config is None:
-        # load the instance config, if it exists, when not testing
-        app.config.from_pyfile('config.py')
-    else:
-        # load the test config if passed in
-        app.config.from_mapping(test_config)
+    app.config.from_object(DevelopmentConfig)
 
     initialize_db(app)
 
@@ -26,7 +22,7 @@ def create_app(test_config=None):
 
     @login_manager.user_loader
     def load_user(username):
-        return Account.objects(username=username).first()
+        return User.objects(username=username).first()
 
     @app.before_request
     def redirect_subdomains():

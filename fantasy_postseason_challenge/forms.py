@@ -2,7 +2,7 @@ from wtforms import Form
 from wtforms.fields import SelectField
 from bson.objectid import ObjectId
 
-from .fantasy_team import Player
+from .classes.player import Player
 
 class SelectTeamForm(Form):
     QB = SelectField("QB")

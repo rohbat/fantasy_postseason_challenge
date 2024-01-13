@@ -3,10 +3,12 @@ from flask import (
 )
 from flask_login import login_user, login_required, logout_user, current_user
 
-from .account import Account
-from .league import League, Member
-from .fantasy_team import FantasyTeam, Player
+from .classes.user import User
+from .classes.league import League, Member
+from .classes.lineup import Lineup
+from .classes.player import Player
 from .forms import SelectTeamForm
+from .utilities import is_round_locked
 
 from bson.objectid import ObjectId
 
@@ -25,10 +27,10 @@ def logged_in_homepage():
 
     for league_membership in league_memberships:
         for member in league_membership.member_list:
-            if member.account_id == current_user.id:
+            if member.account.id == current_user.id:
                 team_names.append(member.team_name)
                 break
-        if league_membership.commissioner_id == current_user.id:
+        if league_membership.commissioner.id == current_user.id:
             league_commissionerships.append(league_membership)
 
     return render_template(
@@ -41,10 +43,10 @@ def logged_in_homepage():
 @bp.route("/select_team/<league_id>", methods=("GET", "POST"))
 @login_required
 def select_team(league_id):
-    # first game of third week @ Jan 24, 3:05 pm ET -> 8:05 pm UTC
-    if datetime.now(tz.UTC) > datetime(2021, 1, 24, 20, 5, tzinfo=tz.UTC):
-        e = "Picks have locked for this week"
-        flash(e)
+    current_round = 'wildcard'  # Determine the current round programmatically or from user input
+
+    if is_round_locked(current_round):
+        flash("Picks have locked for the wildcard round")
         return redirect(url_for("dashboard.view_league", league_id=league_id))
 
     week = current_app.WEEK
@@ -55,7 +57,7 @@ def select_team(league_id):
             league = try_get_league_by_id(league_id)
             if league:
                 for member in league.member_list:
-                    if member.account_id == current_user.id:
+                    if member.account.id == current_user.id:
                         if not getattr(member, f'week_{week}_team', None):
                             fantasy_team = FantasyTeam()
                             fantasy_team.save()
@@ -101,7 +103,7 @@ def select_team(league_id):
     league = try_get_league_by_id(league_id)
     if league:
         for member in league.member_list:
-            if member.account_id == current_user.id:
+            if member.account.id == current_user.id:
                 current_team = getattr(member, f'week_{week}_team', None)
                 if current_team:
                     form.QB.default = current_team.QB.id
@@ -124,10 +126,10 @@ def view_league(league_id):
     league = try_get_league_by_id(league_id)
 
     league_members = league.member_list
-    league_members = sorted(league_members, key=lambda x: x.account_id == current_user.id, reverse=True)
+    league_members = sorted(league_members, key=lambda x: x.account.id == current_user.id, reverse=True)
 
     team_names = [member.team_name for member in league_members]
-    member_names = [Account.objects(id=member.account_id).first().display_name for member in league_members]
+    member_names = [User.objects(id=member.account.id).first().display_name for member in league_members]
 
     positions = ["QB", "RB1", "RB2", "WR1", "WR2", "TE", "FLEX", "K", "D/ST"]
     team_colors = {
@@ -239,12 +241,12 @@ def new_league():
 
             # Create new member object and save to db
             new_member = Member(team_name=team_name, 
-                                account_id=current_user.id)
+                                account=current_user.to_dbref())
 
             # Create new league object and save to db
             new_league = League(league_name=league_name, 
                                 ruleset=ruleset, 
-                                commissioner_id=current_user.id,
+                                commissioner=current_user.to_dbref(),
                                 member_list=[new_member])
 
             new_league.save()
@@ -278,7 +280,7 @@ def join_league():
 
             # Create new member object and save to db
             new_member = Member(team_name=team_name, 
-                                account_id=current_user.id)
+                                account=current_user.to_dbref())
 
             # Append new member id to new league's member list
             league.update(push__member_list=new_member)
