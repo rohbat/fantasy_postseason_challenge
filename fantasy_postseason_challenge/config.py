@@ -31,7 +31,7 @@ class DevelopmentConfig(Config):
 class ProductionConfig(Config):
     # Production specific configuration
     MONGODB_SETTINGS = {
-        'host': f"{MONGODB_HOST}psc_prod?retryWrites=true&w=majority"
+        'host': f"{MONGODB_HOST}psc_prod?retryWrites=true&w=majority",
         'alias': 'psc_prod',
         # Add other connection settings as needed
     }
