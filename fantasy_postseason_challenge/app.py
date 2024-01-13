@@ -1,6 +1,6 @@
 import os
 from .db import initialize_db
-from .config import DevelopmentConfig
+from .config import DevelopmentConfig, ProductionConfig
 from .classes.user import User
 
 from flask import Flask, request, redirect
