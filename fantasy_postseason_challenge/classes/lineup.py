@@ -11,3 +11,8 @@ class Lineup(db.Document):
     FLEX = db.ReferenceField(Player)
     K = db.ReferenceField(Player)
     D_ST = db.ReferenceField(Player)
+
+    meta = {
+        'db_alias': 'psc_test',  # Database alias
+        'collection': 'Lineups'  # Collection name
+    }

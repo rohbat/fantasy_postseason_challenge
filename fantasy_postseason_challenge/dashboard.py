@@ -53,50 +53,97 @@ def select_team(league_id):
 
     form = SelectTeamForm(request.form)
     if request.method == "POST":
-        if getattr(form, f'validate_week_{week}')(): # this is so cool
+        player_ids = {
+            "QB": form.data["QB"],
+            "RB1": form.data["RB1"],
+            "RB2": form.data["RB2"],
+            "WR1": form.data["WR1"],
+            "WR2": form.data["WR2"],
+            "TE": form.data["TE"],
+            "FLEX": form.data["FLEX"],
+            "K": form.data["K"],
+            "D_ST": form.data["D_ST"]
+        }
+
+        print(player_ids)
+
+        teams = []
+        for player_id in player_ids.values():
+            if player_id:
+                player = Player.objects(id=player_id).first()
+                if player is not None:
+                    teams.append(player.team)
+                else:
+                    flash(f"Player with ID {player_id} not found.")
+                    return redirect(url_for("dashboard.select_team", league_id=league_id))
+        else:
+            # Proceed with saving the team based on the current round
             league = try_get_league_by_id(league_id)
             if league:
                 for member in league.member_list:
                     if member.account.id == current_user.id:
-                        if not getattr(member, f'week_{week}_team', None):
-                            fantasy_team = FantasyTeam()
+                        team_field = f'{current_round}_team'
+                        if not getattr(member, team_field, None):
+                            fantasy_team = Lineup()
                             fantasy_team.save()
-                            setattr(member, f'week_{week}_team', fantasy_team)
-                            league.save()
+                            setattr(member, team_field, fantasy_team)
                         else:
-                            fantasy_team = getattr(member, f'week_{week}_team')
+                            fantasy_team = getattr(member, team_field)
 
-                        fantasy_team.QB = ObjectId(form.data["QB"])
-                        fantasy_team.RB1 = ObjectId(form.data["RB1"])
-                        fantasy_team.RB2 = ObjectId(form.data["RB2"])
-                        fantasy_team.WR1 = ObjectId(form.data["WR1"])
-                        fantasy_team.WR2 = ObjectId(form.data["WR2"])
-                        fantasy_team.TE = ObjectId(form.data["TE"])
-                        fantasy_team.FLEX = ObjectId(form.data["FLEX"])
-                        fantasy_team.K = ObjectId(form.data["K"])
-                        fantasy_team.D_ST = ObjectId(form.data["D_ST"])
+                        # Assign players to the team
+                        for position, player_id in player_ids.items():
+                            if player_id:
+                                setattr(fantasy_team, position, ObjectId(player_id))
+
                         fantasy_team.save()
+                        league.save()
                         break
 
             return redirect(url_for("dashboard.view_league", league_id=league_id))
 
-        else:
-            e = "Invalid team composition"
-            flash(e)
-
-    qbs = sorted(Player.objects(**{'position': 'QB', f'week_{week}_avail': True}), key=lambda x: (x.team, x.games_started), reverse=True)
-    rbs = sorted(Player.objects(**{'position': 'RB', f'week_{week}_avail': True}), key=lambda x: (x.team, x.games_started), reverse=True)
-    wrs = sorted(Player.objects(**{'position': 'WR', f'week_{week}_avail': True}), key=lambda x: (x.team, x.games_started), reverse=True)
-    tes = sorted(Player.objects(**{'position': 'TE', f'week_{week}_avail': True}), key=lambda x: (x.team, x.games_started), reverse=True)
-    ks = sorted(Player.objects(**{'position': 'K', f'week_{week}_avail': True}), key=lambda x: (x.team, x.games_started), reverse=True)
-    d_sts = sorted(Player.objects(**{'position': 'D/ST', f'week_{week}_avail': True}), key=lambda x: (x.team, x.games_started), reverse=True)
+    qbs = sorted(Player.objects(position='QB'), key=lambda x: (x.team, x.games_started), reverse=True)
+    rbs = sorted(Player.objects(position='RB'), key=lambda x: (x.team, x.games_started), reverse=True)
+    wrs = sorted(Player.objects(position='WR'), key=lambda x: (x.team, x.games_started), reverse=True)
+    tes = sorted(Player.objects(position='TE'), key=lambda x: (x.team, x.games_started), reverse=True)
+    # ks = sorted(Player.objects(position='K'), key=lambda x: (x.team, x.games_started), reverse=True)
+    dummy_object_ids = [str(ObjectId()) for _ in range(3)]
+    print(dummy_object_ids)
+    ks = [
+        {
+            "id": ObjectId("65a21887c04ca8b0fc762104"),
+            "name": "Kicker One",
+            "team": "Team A",
+            "position": "K",
+            "display_name": "Kicker the First",
+            "games_started": 5
+        },
+        {
+            "id": dummy_object_ids[1],
+            "name": "Kicker Two",
+            "team": "Team B",
+            "position": "K",
+            "display_name": "Kicker the Second",
+            "games_started": 3
+        },
+        {
+            "id": dummy_object_ids[2],
+            "name": "Kicker Three",
+            "team": "Team C",
+            "position": "K",
+            "display_name": "Kicker the Third",
+            "games_started": 4
+        },
+        # Add more players as needed
+    ]
+    d_sts = sorted(Player.objects(position='D/ST'), key=lambda x: (x.team, x.games_started), reverse=True)
 
     form.QB.choices = [(qb.id, qb.display_name) for qb in qbs]
     form.RB1.choices = form.RB2.choices = [(rb.id, rb.display_name) for rb in rbs]
     form.WR1.choices = form.WR2.choices = [(wr.id, wr.display_name) for wr in wrs]
     form.TE.choices = [(te.id, te.display_name) for te in tes]
     form.FLEX.choices = [(flex.id, flex.display_name) for flex in sorted(rbs + wrs + tes, key=lambda x: (x.team, x.games_started), reverse=True)]
-    form.K.choices = [(k.id, k.display_name) for k in ks]
+    # form.K.choices = [(k.id, k.display_name) for k in ks]
+    form.K.choices = [(k['id'], k['display_name']) for k in ks]
     form.D_ST.choices = [(d_st.id, d_st.display_name) for d_st in d_sts]
 
     # TODO: Might be able to refactor this by consolidating with some of the code in POST
