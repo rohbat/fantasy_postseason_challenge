@@ -6,6 +6,7 @@ sys.path.append(parent_dir)
 
 from selenium import webdriver
 from bs4 import BeautifulSoup as bs
+from .config import DevelopmentConfig, ProductionConfig
 from mongoengine import connect
 import configparser
 from dotenv import load_dotenv
@@ -72,12 +73,19 @@ def upload_all_rosters():
             player.save()
 
 def establish_db_connection():
-    mongo_host = MONGODB_HOST
-    print(mongo_host)
+    flask_env = os.getenv('FLASK_ENV', 'development')
+    if flask_env == 'production':
+        mongo_host = ProductionConfig.MONGODB_SETTINGS['host']
+        mongo_alias = ProductionConfig.MONGODB_SETTINGS['alias']
+    else:
+        mongo_host = DevelopmentConfig.MONGODB_SETTINGS['host']
+        mongo_alias = DevelopmentConfig.MONGODB_SETTINGS['alias']
+
+    print(f"Connecting to MongoDB: {mongo_host}")
     if not mongo_host:
         raise ValueError("MongoDB host not found in environment variables")
     try:
-        connect(host=mongo_host, alias='psc_test')
+        connect(host=mongo_host, alias=mongo_alias)
         print("Connected to MongoDB successfully")
     except Exception as e:
         print(f"Failed to connect to MongoDB: {e}")
