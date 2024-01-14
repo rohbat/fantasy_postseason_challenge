@@ -9,7 +9,7 @@ MONGODB_HOST = f"mongodb+srv://thepaulonascimento:{os.getenv('MONGO_DB_PW')}@pos
 #psc_test?retryWrites=true&w=majority"
 
 PLAYOFF_START_TIMES = {
-    'wildcard': datetime(2024, 1, 13, 13, 5, tzinfo=tz.UTC),
+    'wildcard': datetime(2024, 1, 15, 13, 5, tzinfo=tz.UTC),
     'divisional': datetime(2024, 1, 20, 13, 5, tzinfo=tz.UTC),
     'championship': datetime(2024, 1, 28, 13, 5, tzinfo=tz.UTC),
 }
@@ -35,7 +35,6 @@ class ProductionConfig(Config):
         'alias': 'psc_prod',
         # Add other connection settings as needed
     }
-    print(MONGODB_SETTINGS)
 
 def get_db_alias():
     flask_env = os.getenv('FLASK_ENV', 'development')

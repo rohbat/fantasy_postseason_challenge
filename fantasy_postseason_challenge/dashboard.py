@@ -49,7 +49,7 @@ def select_team(league_id):
         flash("Picks have locked for the wildcard round")
         return redirect(url_for("dashboard.view_league", league_id=league_id))
 
-    week = current_app.WEEK
+    week = current_app.CURRENT_ROUND
 
     form = SelectTeamForm(request.form)
     if request.method == "POST":
@@ -135,7 +135,7 @@ def select_team(league_id):
         },
         # Add more players as needed
     ]
-    d_sts = sorted(Player.objects(position='D/ST'), key=lambda x: (x.team, x.games_started), reverse=True)
+    d_sts = sorted(Player.objects(position='D_ST'), key=lambda x: (x.team, x.games_started), reverse=True)
 
     form.QB.choices = [(qb.id, qb.display_name) for qb in qbs]
     form.RB1.choices = form.RB2.choices = [(rb.id, rb.display_name) for rb in rbs]
@@ -178,7 +178,7 @@ def view_league(league_id):
     team_names = [member.team_name for member in league_members]
     member_names = [User.objects(id=member.account.id).first().display_name for member in league_members]
 
-    positions = ["QB", "RB1", "RB2", "WR1", "WR2", "TE", "FLEX", "K", "D/ST"]
+    positions = ["QB", "RB1", "RB2", "WR1", "WR2", "TE", "FLEX", "K", "D_ST"]
     team_colors = {
         'None' : ("#808080", "#FF00FF"),
         'KC' : ("#E31837", "#FFB81C"),
@@ -208,54 +208,56 @@ def view_league(league_id):
         default_score_displayed = "score_ppr"
     else:
         default_score_displayed = "score_half_ppr"
-    for week in range(1, current_app.WEEK + 1):
-        league_teams = [getattr(member, f'week_{week}_team', None) for member in league_members]
-        week_data = []
-        if league_teams:
-            week_scores = [Decimal(0.00) for team in league_teams]
-            
-            for position in positions:
-                week_data.append([])
-                if position == 'D/ST':
-                    pos = 'D_ST'
-                    score_displayed = 'd_st_score_normal'
-                elif position == 'K':
-                    pos = position
-                    score_displayed = 'k_score_normal'
+
+    current_round = current_app.CURRENT_ROUND
+    print(current_round)
+    round_team_field = f"{current_round}_team" 
+    print(round_team_field)
+
+    league_teams = [getattr(member, round_team_field, None) for member in league_members]
+    
+    first_guy = league_members[0]
+    print(round_team_field)
+    print(getattr(first_guy, f"{current_round}_team", None).QB.name)
+
+
+    week_data = []
+    if league_teams:
+        week_scores = [Decimal(0.00) for _ in league_teams]
+
+        for position in positions:
+            week_data.append([])
+            if position == 'D_ST':
+                pos = 'D_ST'
+                score_displayed = 'd_st_score_normal'
+            elif position == 'K':
+                pos = position
+                score_displayed = 'k_score_normal'
+            else:
+                pos = position
+                score_displayed = default_score_displayed
+            for i, team in enumerate(league_teams):
+                if team:
+                    player = getattr(team, position)
+                    name = player.display_name if player else 'Player not set'
+
+                    # Assuming the score calculation logic is based on a method in your player class
+                    # score = player.calculate_score_for_round(current_round) if player else Decimal('0.00')
+                    score = Decimal('0.00')
+
+                    colors = team_colors.get(player.team, ("#808080", "#FF00FF")) if player else team_colors['None']
+                    week_data[-1].append((name, score, *colors))
+                    week_scores[i] += score
                 else:
-                    pos = position
-                    score_displayed = default_score_displayed
+                    week_data[-1].append(('set your lineup', 0, *team_colors['None']))
+    else:
+        week_data = [('set your lineup', 0, *team_colors['None'])] * len(positions)
+    
+    lineup_data.append(week_data)
+    team_scores.append(week_scores)
 
-                for i, team in enumerate(league_teams):
-                    if team:
-                        player = getattr(team, pos)
-                        name = player.display_name
-
-                        if (player.id, week) in player_score_memo:
-                            score = player_score_memo[(player.id, week)]
-                        else:
-                            player_stats = getattr(player, f'week_{week}_stats', None)
-                            if not player_stats:
-                                score = Decimal('0.00')
-                            else:
-                                score = getattr(player_stats, score_displayed)
-                            player_score_memo[(player.id, week)] = score
-
-                        colors = team_colors[player.team]
-                        week_data[-1].append((name, score, *colors))
-                        week_scores[i] += score
-                    else:
-                        week_data[-1].append(('set your lineup', 0, *team_colors['None']))
-        else:
-            week_data = [('set your lineup', 0, *team_colors['None'])] * len(positions)
-        lineup_data.append(week_data)
-        team_scores.append(week_scores)
-
-    # cum sum
-    playoff_scores = [
-        [sum(team_scores[week][i] for week in range(until_week)) for i in range(len(league_members))]
-        for until_week in range(1, current_app.WEEK + 1)
-    ]
+    # Calculate scores only for the current round
+    playoff_scores = [score for score in week_scores]
 
     return render_template(
         "view_league.html",

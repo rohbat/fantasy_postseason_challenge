@@ -24,3 +24,7 @@ class User(db.Document):
         'db_alias': get_db_alias(),  # Database alias
         'collection': 'Users'  # Collection name
     }
+
+    def __repr__(self):
+        return (f"username={self.username}, "
+                f"display_name={self.display_name}, ")
