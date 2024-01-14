@@ -62,10 +62,8 @@ def select_team(league_id):
             "TE": form.data["TE"],
             "FLEX": form.data["FLEX"],
             "K": form.data["K"],
-            "D_ST": form.data["D_ST"]
+            "D/ST": form.data["D_ST"]
         }
-
-        print(player_ids)
 
         teams = []
         for player_id in player_ids.values():
@@ -135,7 +133,7 @@ def select_team(league_id):
         },
         # Add more players as needed
     ]
-    d_sts = sorted(Player.objects(position='D_ST'), key=lambda x: (x.team, x.games_started), reverse=True)
+    d_sts = sorted(Player.objects(position='D/ST'), key=lambda x: (x.team, x.games_started), reverse=True)
 
     form.QB.choices = [(qb.id, qb.display_name) for qb in qbs]
     form.RB1.choices = form.RB2.choices = [(rb.id, rb.display_name) for rb in rbs]
