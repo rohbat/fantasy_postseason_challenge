@@ -35,6 +35,7 @@ class ProductionConfig(Config):
         'alias': 'psc_prod',
         # Add other connection settings as needed
     }
+    print(MONGODB_SETTINGS)
 
 def get_db_alias():
     flask_env = os.getenv('FLASK_ENV', 'development')
