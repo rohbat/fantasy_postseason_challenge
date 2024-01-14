@@ -1,4 +1,5 @@
 from ..db import db
+from ..config import get_db_alias
 from .player import Player
 
 class Lineup(db.Document):
@@ -13,6 +14,6 @@ class Lineup(db.Document):
     D_ST = db.ReferenceField(Player)
 
     meta = {
-        'db_alias': 'psc_test',  # Database alias
+        'db_alias': get_db_alias(),  # Database alias
         'collection': 'Lineups'  # Collection name
     }

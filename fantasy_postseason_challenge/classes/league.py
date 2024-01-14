@@ -1,4 +1,4 @@
-from ..db import db
+from ..config import get_db_alias
 from .lineup import Lineup
 
 class Member(db.EmbeddedDocument):
@@ -15,6 +15,6 @@ class League(db.Document):
     member_list = db.ListField(db.EmbeddedDocumentField(Member))
 
     meta = {
-        'db_alias': 'psc_test',  # Database alias
+        'db_alias': get_db_alias(),  # Database alias
         'collection': 'Leagues'  # Collection name
     }

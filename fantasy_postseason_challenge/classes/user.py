@@ -1,4 +1,5 @@
 from ..db import db
+from ..config import get_db_alias
 from .league import League
 
 class User(db.Document):
@@ -20,6 +21,6 @@ class User(db.Document):
         return self.username
 
     meta = {
-        'db_alias': 'psc_test',  # Database alias
+        'db_alias': get_db_alias(),  # Database alias
         'collection': 'Users'  # Collection name
     }

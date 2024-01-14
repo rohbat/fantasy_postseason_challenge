@@ -1,3 +1,4 @@
+from ..config import get_db_alias
 from mongoengine import Document, StringField, IntField
 
 class Player(Document):
@@ -11,7 +12,7 @@ class Player(Document):
         return '[' + self.team + '] ' + self.name
 
     meta = {
-        'db_alias': 'psc_test',  # Database alias
+        'db_alias': get_db_alias(),  # Database alias
         'collection': 'Players'  # Collection name
     }
     
