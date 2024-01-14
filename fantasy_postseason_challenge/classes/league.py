@@ -1,4 +1,5 @@
 from ..config import get_db_alias
+from ..db import db
 from .lineup import Lineup
 
 class Member(db.EmbeddedDocument):
