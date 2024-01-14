@@ -30,7 +30,7 @@ headers = {
 }
 
 PLAYOFF_TEAMS = ['CLE', 'HOU', 'MIA', 'KC', 'PIT', 'BUF', 'GB', 'DAL', 'LAR', 'DET', 'PHI', 'TB']
-desired_positions = {"QB", "WR", "TE", "RB", "K"}
+desired_positions = {"QB", "WR", "TE", "RB", "PK"}
 
 # Function to get filtered team roster
 def get_filtered_team_roster(team_abv):

@@ -103,36 +103,7 @@ def select_team(league_id):
     rbs = sorted(Player.objects(position='RB'), key=lambda x: (x.team, x.games_started), reverse=True)
     wrs = sorted(Player.objects(position='WR'), key=lambda x: (x.team, x.games_started), reverse=True)
     tes = sorted(Player.objects(position='TE'), key=lambda x: (x.team, x.games_started), reverse=True)
-    # ks = sorted(Player.objects(position='K'), key=lambda x: (x.team, x.games_started), reverse=True)
-    dummy_object_ids = [str(ObjectId()) for _ in range(3)]
-    print(dummy_object_ids)
-    ks = [
-        {
-            "id": ObjectId("65a21887c04ca8b0fc762104"),
-            "name": "Kicker One",
-            "team": "Team A",
-            "position": "K",
-            "display_name": "Kicker the First",
-            "games_started": 5
-        },
-        {
-            "id": dummy_object_ids[1],
-            "name": "Kicker Two",
-            "team": "Team B",
-            "position": "K",
-            "display_name": "Kicker the Second",
-            "games_started": 3
-        },
-        {
-            "id": dummy_object_ids[2],
-            "name": "Kicker Three",
-            "team": "Team C",
-            "position": "K",
-            "display_name": "Kicker the Third",
-            "games_started": 4
-        },
-        # Add more players as needed
-    ]
+    ks = sorted(Player.objects(position='PK'), key=lambda x: (x.team, x.games_started), reverse=True)
     d_sts = sorted(Player.objects(position='D/ST'), key=lambda x: (x.team, x.games_started), reverse=True)
 
     form.QB.choices = [(qb.id, qb.display_name) for qb in qbs]
