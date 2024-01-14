@@ -6,7 +6,7 @@ sys.path.append(parent_dir)
 
 from selenium import webdriver
 from bs4 import BeautifulSoup as bs
-from .config import DevelopmentConfig, ProductionConfig
+from .config import DevelopmentConfig, ProductionConfig, get_db_alias
 from mongoengine import connect
 import configparser
 from dotenv import load_dotenv
@@ -19,7 +19,7 @@ from .app import create_app
 load_dotenv()
 
 API_URL = "https://tank01-nfl-live-in-game-real-time-statistics-nfl.p.rapidapi.com"
-MONGODB_HOST = f"mongodb+srv://thepaulonascimento:{os.getenv('MONGO_DB_PW')}@postseasonchallenge.drcj3it.mongodb.net/psc_test?retryWrites=true&w=majority"
+MONGODB_HOST = f"mongodb+srv://thepaulonascimento:{os.getenv('MONGO_DB_PW')}@postseasonchallenge.drcj3it.mongodb.net/{get_db_alias()}?retryWrites=true&w=majority"
 
 ApiKey = os.getenv('X-RapidAPI-Key')
 ApiHost = os.getenv('X-RapidAPI-Host')
