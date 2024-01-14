@@ -210,17 +210,10 @@ def view_league(league_id):
         default_score_displayed = "score_half_ppr"
 
     current_round = current_app.CURRENT_ROUND
-    print(current_round)
     round_team_field = f"{current_round}_team" 
-    print(round_team_field)
 
     league_teams = [getattr(member, round_team_field, None) for member in league_members]
     
-    first_guy = league_members[0]
-    print(round_team_field)
-    print(getattr(first_guy, f"{current_round}_team", None).QB.name)
-
-
     week_data = []
     if league_teams:
         week_scores = [Decimal(0.00) for _ in league_teams]
