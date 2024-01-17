@@ -9,6 +9,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+players_data.json
+
 # C extensions
 *.so
 

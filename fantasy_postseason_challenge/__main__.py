@@ -16,6 +16,9 @@ from .classes.player import Player
 import argparse
 from .app import create_app
 
+from bson.dbref import DBRef
+from pymongo import MongoClient
+
 load_dotenv()
 
 API_URL = "https://tank01-nfl-live-in-game-real-time-statistics-nfl.p.rapidapi.com"
@@ -23,6 +26,9 @@ MONGODB_HOST = f"mongodb+srv://thepaulonascimento:{os.getenv('MONGO_DB_PW')}@pos
 
 ApiKey = os.getenv('X-RapidAPI-Key')
 ApiHost = os.getenv('X-RapidAPI-Host')
+
+client = MongoClient(MONGODB_HOST)
+db = client['psc_test']
 
 headers = {
     'X-RapidAPI-Key': ApiKey,
@@ -57,12 +63,36 @@ def get_filtered_team_roster(team_abv):
 
     return filtered_roster
 
+def grab_scores_for_games(game_ids):
+    positions = ["QB", "RB", "WR", "TE", "PK"]
+    for id in game_ids:
+        try:
+            url = f"{API_URL}/getNFLBoxScore"
+            response = requests.get(url, params={'gameID': id, 'fantasyPoints': True}, headers=headers)
+            if response.status_code == 200:
+                data = response.json()
+                player_stats = data['body']['playerStats']
+                for index in player_stats:
+                    # Process each player's stats here
+                    player_obj = player_stats[index]
+                    name = player_obj['longName']
+                    team = player_obj['team']   
+
+                    if player_obj.get('fantasyPointsDefault') is not None:
+                        points = player_obj['fantasyPointsDefault']['PPR']
+                        if points != '0.0':
+                            print(f"{name}, {team}: {points} pts")
+            else:
+                print(f"Failed to fetch data for game ID {id}. Status code: {response.status_code}")
+        except requests.RequestException as e:
+            print(f"Error during request for game ID {id}: {e}")
+
 # Upload all rosters
 def upload_all_rosters():
     all_filtered_rosters = {team: get_filtered_team_roster(team) for team in PLAYOFF_TEAMS}
+    all_players_data = []
     for team, roster in all_filtered_rosters.items():
         for player_data in roster:
-            # print(player_data)
             player = Player(
                 name=player_data['espnName'],
                 team=player_data['team'],
@@ -70,7 +100,26 @@ def upload_all_rosters():
                 display_name=player_data['longName'],
                 games_started=player_data.get('gamesPlayed', 0),
             )
-            player.save()
+            player_dict = {
+                'name': player.name,
+                'team': player.team,
+                'position': player.position,
+                'display_name': player.display_name,
+                'games_started': player.games_started,
+            }
+            existing_player = Player.objects(name=player.name, team=player.team).first()
+            if existing_player is None:
+                # If the player does not exist, save the new player
+                player.save()
+            else:
+                # Optional: Update existing player data if necessary
+                pass
+            all_players_data.append(player_data)
+        json_output = json.dumps(all_players_data, indent=4)
+
+    # If you want to save this JSON data to a file
+    with open('players_data.json', 'w') as file:
+        file.write(json_output)
 
 def establish_db_connection():
     flask_env = os.getenv('FLASK_ENV', 'development')
@@ -99,10 +148,12 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Check the mode and execute accordingly
-    if args.mode == 'script':
+    if args.mode == 'upload':
         print("Running script mode")
         upload_all_rosters()
         print("Rosters uploaded to MongoDB")
+    elif args.mode == 'scores':
+        grab_scores_for_games(['20240113_CLE@HOU'])
     else:
         # Code to run when mode is 'app' or any other value
         # (e.g., initializing and running the Flask app)

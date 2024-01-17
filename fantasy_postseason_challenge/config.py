@@ -8,11 +8,22 @@ load_dotenv()
 MONGODB_HOST = f"mongodb+srv://thepaulonascimento:{os.getenv('MONGO_DB_PW')}@postseasonchallenge.drcj3it.mongodb.net/"
 #psc_test?retryWrites=true&w=majority"
 
-PLAYOFF_START_TIMES = {
-    'wildcard': datetime(2024, 1, 15, 13, 5, tzinfo=tz.UTC),
-    'divisional': datetime(2024, 1, 20, 13, 5, tzinfo=tz.UTC),
-    'championship': datetime(2024, 1, 28, 13, 5, tzinfo=tz.UTC),
+GAMES = {
+    'wildcard': {
+        'start_time': datetime(2024, 1, 15, 13, 5, tzinfo=tz.UTC), 
+        'game_ids': []
+    },
+    'divisional': {
+        'start_time': datetime(2024, 1, 20, 13, 5, tzinfo=tz.UTC), 
+        'game_ids': ['20240120_GB@SF','20240120_HOU@BAL','20240120_TB@DET','20240120_KC@BUF'] 
+    },
+    'championship': {
+        'start_time': datetime(2024, 1, 28, 13, 5, tzinfo=tz.UTC), 
+        'game_ids': []
+    },
 }
+
+
 
 class Config:
     SECRET_KEY = os.getenv('FLASK_SECRET_KEY', 'default_secret_key')

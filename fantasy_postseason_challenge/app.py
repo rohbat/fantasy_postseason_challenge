@@ -48,7 +48,7 @@ def create_app(test_config=None):
     )
 
     # EDIT WEEK VALUE HERE
-    app.CURRENT_ROUND = "wildcard"
+    app.CURRENT_ROUND = "divisional"
 
     return app
 

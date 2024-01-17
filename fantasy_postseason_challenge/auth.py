@@ -23,21 +23,20 @@ def register():
         password = request.form["password"]
         display_name = request.form["display_name"]
 
-        e = None
         if not (username and password and display_name):
-            e = "username, password and display name required"
-        elif User.objects(username=username).first():
-            e = f"Username: \"{username}\" already exists"
-        
-        if not e:
-            new_user = User(username=username, password_hash=generate_password_hash(password), display_name=display_name)
-            new_user.save()
-            login_user(new_user)
-            return redirect(url_for("dashboard.logged_in_homepage"))
-        else:
-            flash(e)
+            flash("username, password and display name required")
+            return render_template("register.html")
 
+        if User.objects(username=username).first():
+            flash(f"Username: \"{username}\" already exists")
+            return render_template("register.html")
+
+        new_user = User(username=username, password_hash=generate_password_hash(password), display_name=display_name)
+        new_user.save()
+        login_user(new_user)
+        return redirect(url_for("dashboard.logged_in_homepage"))
     return render_template("register.html")
+
 
 @bp.route("/login", methods=("GET", "POST"))
 def login():

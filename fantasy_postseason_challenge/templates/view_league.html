@@ -27,47 +27,35 @@
 
       <!-- Display for the current round -->
       <h3>{{ current_round_display }}</h3>
+      
       <table class="league-teams">
-        <thead>
-          <tr>
-            <th></th>
-            {% for team_name in team_names %}
-              <th colspan="2" style="text-align:center">{{team_name}}</th>
-            {% endfor %}
-          </tr>
-          <tr>
-            <td></td>
-            {% for member_name in member_names %}
-              <td colspan="2" style="text-align:center">{{member_name}}</td>
-            {% endfor %}
-          </tr>
-        </thead>
-
         <tbody>
-          {% for i, position in enumerate(positions) %}
+            <!-- Header row for labels -->
             <tr>
-              <th style="width:{{position_width}}">{{position}}</th>
-              {% for row in lineup_data %}
-                {% set player = row[i] %} <!-- Access the player data for the current position -->
-                <td style="background-color:{{player[2]}}; color:{{player[3]}}; width:{{name_width}}px;">{{player[0]}}</td>
-                <td style="width:{{score_width}}; text-align:right;">{{player[1]}}</td>
-              {% endfor %}
+                <th>Owner Name</th>
+                {% for member in team_data %}
+                    <td>{{ member.owner_name }}</td>
+                {% endfor %}
             </tr>
-          {% endfor %}
-          <tr>
-            <th style="width:{{position_width}}">Round Score</th>
-            {% for score in team_scores %}
-              <td colspan="2" style="text-align:center"><b>{{score}}</b></td>
+    
+            <tr>
+                <th>Team Name</th>
+                {% for member in team_data %}
+                    <td>{{ member.team_name }}</td>
+                {% endfor %}
+            </tr>
+    
+            <!-- Rows for each position -->
+            {% for position in positions %}
+                <tr>
+                    <th>{{ position }}</th>
+                    {% for member in team_data %}
+                        <td>{{ member[position] }}</td>
+                    {% endfor %}
+                </tr>
             {% endfor %}
-          </tr>
-          <tr>
-            <th style="width:{{position_width}}">Playoff Score</th>
-            {% for score in playoff_scores %}
-              <td colspan="2" style="text-align:center"><b>{{score}}</b></td>
-            {% endfor %}
-          </tr>
         </tbody>
-      </table>
+    </table>
 
       <br><br>
 

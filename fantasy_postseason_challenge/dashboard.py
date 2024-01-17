@@ -9,6 +9,8 @@ from .classes.lineup import Lineup
 from .classes.player import Player
 from .forms import SelectTeamForm
 from .utilities import is_round_locked
+from .db import db
+from bson.dbref import DBRef
 
 from bson.objectid import ObjectId
 
@@ -21,17 +23,19 @@ bp = Blueprint('dashboard', __name__, url_prefix='/')
 @bp.route("/homepage")
 @login_required
 def logged_in_homepage():
-    league_memberships = current_user.memberships
-    team_names = []
+    # Dereference league memberships
+    league_memberships = [League.objects(id=league.id).first() for league in current_user.memberships]
     league_commissionerships = []
 
-    for league_membership in league_memberships:
-        for member in league_membership.member_list:
-            if member.account.id == current_user.id:
-                team_names.append(member.team_name)
-                break
-        if league_membership.commissioner.id == current_user.id:
-            league_commissionerships.append(league_membership)
+    # Find team names for each league
+    team_names = []
+    for league in league_memberships:
+        for member in league.member_list:
+            team_names.append(member.team_name)
+
+    # Find all leagues where the current user is the commissioner
+    if league_memberships:
+        league_commissionerships = League.objects(commissioner=current_user.id)
 
     return render_template(
         "logged_in_homepage.html",
@@ -43,7 +47,7 @@ def logged_in_homepage():
 @bp.route("/select_team/<league_id>", methods=("GET", "POST"))
 @login_required
 def select_team(league_id):
-    current_round = 'wildcard'  # Determine the current round programmatically or from user input
+    current_round = 'divisional'  # Determine the current round programmatically or from user input
 
     if is_round_locked(current_round):
         flash("Picks have locked for the wildcard round")
@@ -141,98 +145,35 @@ def select_team(league_id):
 def view_league(league_id):
     league = try_get_league_by_id(league_id)
 
-    league_members = league.member_list
-    league_members = sorted(league_members, key=lambda x: x.account.id == current_user.id, reverse=True)
+    league_members = sorted(league.member_list, key=lambda x: x.account.id == current_user.id, reverse=True)
 
-    team_names = [member.team_name for member in league_members]
-    member_names = [User.objects(id=member.account.id).first().display_name for member in league_members]
+    team_data = []
+    for member in league_members:
+        member_data = {
+            'owner_name': User.objects(id=member.account.id).first().display_name,
+            'team_name': member.team_name,
+        }
+        
+        current_round = current_app.CURRENT_ROUND
 
-    positions = ["QB", "RB1", "RB2", "WR1", "WR2", "TE", "FLEX", "K", "D_ST"]
-    team_colors = {
-        'None' : ("#808080", "#FF00FF"),
-        'KC' : ("#E31837", "#FFB81C"),
-        'BUF' : ("#C60C30", "#00338D"),
-        'PIT' : ("#101820", "#FFB612"),
-        'TEN' : ("#4B92DB", "#0C2340"),
-        'BAL' : ("#241773", "#FFFFFF"),
-        'CLE' : ("#311D00", "#FF3C00"),
-        'IND' : ("#002C5F", "#FFFFFF"),
-        'GB' : ("#203731", "#FFB612"),
-        'NO' : ("#D3BC8D", "#101820"),
-        'SEA' : ("#002244", "#69BE28"),
-        'WAS' : ("#7C1415", "#FFB612"),
-        'TB' : ("#D50A0A", "#0A0A08"),
-        'LAR' : ("#003594", "#FFD100"),
-        'CHI' : ("#0B162A", "#C83803"),
-    }
+        round_team_field = f"{current_round}_team" 
+        team = getattr(member, round_team_field, None)
+        
+        for position in ["QB", "RB1", "RB2", "WR1", "WR2", "TE", "FLEX", "K", "D_ST"]:
+            player = getattr(team, position, None) if team else None
+            player_name = player.display_name if player else 'Player not set'
+            member_data[position] = player_name
 
-    lineup_data = []
-    team_scores = []
-    playoff_scores = []
-    player_score_memo = {}
+        team_data.append(member_data)
 
-    if league.ruleset == "normal":
-        default_score_displayed = "score_normal"
-    elif league.ruleset == "ppr":
-        default_score_displayed = "score_ppr"
-    else:
-        default_score_displayed = "score_half_ppr"
-
-    current_round = current_app.CURRENT_ROUND
-    round_team_field = f"{current_round}_team" 
-
-    league_teams = [getattr(member, round_team_field, None) for member in league_members]
-    
-    week_data = []
-    if league_teams:
-        week_scores = [Decimal(0.00) for _ in league_teams]
-
-        for position in positions:
-            week_data.append([])
-            if position == 'D_ST':
-                pos = 'D_ST'
-                score_displayed = 'd_st_score_normal'
-            elif position == 'K':
-                pos = position
-                score_displayed = 'k_score_normal'
-            else:
-                pos = position
-                score_displayed = default_score_displayed
-            for i, team in enumerate(league_teams):
-                if team:
-                    player = getattr(team, position)
-                    name = player.display_name if player else 'Player not set'
-
-                    # Assuming the score calculation logic is based on a method in your player class
-                    # score = player.calculate_score_for_round(current_round) if player else Decimal('0.00')
-                    score = Decimal('0.00')
-
-                    colors = team_colors.get(player.team, ("#808080", "#FF00FF")) if player else team_colors['None']
-                    week_data[-1].append((name, score, *colors))
-                    week_scores[i] += score
-                else:
-                    week_data[-1].append(('set your lineup', 0, *team_colors['None']))
-    else:
-        week_data = [('set your lineup', 0, *team_colors['None'])] * len(positions)
-    
-    lineup_data.append(week_data)
-    team_scores.append(week_scores)
-
-    # Calculate scores only for the current round
-    playoff_scores = [score for score in week_scores]
+    print(league)
+    print(team_data)
 
     return render_template(
         "view_league.html",
-        positions=positions,
-        team_names=team_names,
-        member_names=member_names,
-        lineup_data=lineup_data,
-        team_scores=team_scores,
-        playoff_scores=playoff_scores,
         league=league,
-        position_width=60,
-        score_width=50, # TODO: choose good values for these and put in html?
-        name_width=180, # TODO: choose good values for these and put in html?
+        team_data=team_data,
+        positions=["QB", "RB1", "RB2", "WR1", "WR2", "TE", "FLEX", "K", "D_ST"],
     )
 
 @bp.route("/new_league", methods=("GET", "POST"))
@@ -248,22 +189,26 @@ def new_league():
             e = "league name and ruleset required"
 
         if not e:
+            actual_user = current_user._get_current_object()
             # TODO: Make insert operations such that there's no issues if a middle operation fails
 
             # Create new member object and save to db
             new_member = Member(team_name=team_name, 
-                                account=current_user.to_dbref())
+                                account=actual_user)
 
             # Create new league object and save to db
             new_league = League(league_name=league_name, 
                                 ruleset=ruleset, 
-                                commissioner=current_user.to_dbref(),
+                                commissioner=actual_user,
                                 member_list=[new_member])
 
             new_league.save()
 
             # Append new league id to current user's league membership list
-            current_user.update(push__memberships=new_league)
+            # actual_user.update(push__memberships=new_league)
+            # actual_user.reload()
+            actual_user.memberships.append(new_league)
+            actual_user.save()
 
             return redirect(url_for("dashboard.logged_in_homepage"))
         else:
