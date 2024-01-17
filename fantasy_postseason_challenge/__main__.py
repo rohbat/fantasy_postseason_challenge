@@ -35,7 +35,7 @@ headers = {
     'X-RapidAPI-Host': ApiHost
 }
 
-PLAYOFF_TEAMS = ['CLE', 'HOU', 'MIA', 'KC', 'PIT', 'BUF', 'GB', 'DAL', 'LAR', 'DET', 'PHI', 'TB']
+PLAYOFF_TEAMS = ['BAL', 'HOU', 'KC', 'BUF', 'GB', 'SF', 'DET','TB']
 desired_positions = {"QB", "WR", "TE", "RB", "PK"}
 
 # Function to get filtered team roster

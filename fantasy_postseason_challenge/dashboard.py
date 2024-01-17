@@ -66,7 +66,7 @@ def select_team(league_id):
             "TE": form.data["TE"],
             "FLEX": form.data["FLEX"],
             "K": form.data["K"],
-            "D/ST": form.data["D_ST"]
+            "D_ST": form.data["D_ST"]
         }
 
         teams = []
@@ -110,13 +110,13 @@ def select_team(league_id):
     ks = sorted(Player.objects(position='PK'), key=lambda x: (x.team, x.games_started), reverse=True)
     d_sts = sorted(Player.objects(position='D/ST'), key=lambda x: (x.team, x.games_started), reverse=True)
 
-    form.QB.choices = [(qb.id, qb.display_name) for qb in qbs]
-    form.RB1.choices = form.RB2.choices = [(rb.id, rb.display_name) for rb in rbs]
-    form.WR1.choices = form.WR2.choices = [(wr.id, wr.display_name) for wr in wrs]
-    form.TE.choices = [(te.id, te.display_name) for te in tes]
-    form.FLEX.choices = [(flex.id, flex.display_name) for flex in sorted(rbs + wrs + tes, key=lambda x: (x.team, x.games_started), reverse=True)]
+    form.QB.choices = [(qb.id, f"{qb.display_name} ({qb.team})") for qb in qbs]
+    form.RB1.choices = form.RB2.choices = [(rb.id, f"{rb.display_name} ({rb.team})") for rb in rbs]
+    form.WR1.choices = form.WR2.choices = [(wr.id, f"{wr.display_name} ({wr.team})") for wr in wrs]
+    form.TE.choices = [(te.id, f"{te.display_name} ({te.team})") for te in tes]
+    form.FLEX.choices = [(flex.id, f"{flex.display_name} ({flex.team})") for flex in sorted(rbs + wrs + tes, key=lambda x: (x.team, x.games_started), reverse=True)]
     # form.K.choices = [(k.id, k.display_name) for k in ks]
-    form.K.choices = [(k['id'], k['display_name']) for k in ks]
+    form.K.choices = [(k['id'], f"{k['display_name']} ({k['team']})") for k in ks]
     form.D_ST.choices = [(d_st.id, d_st.display_name) for d_st in d_sts]
 
     # TODO: Might be able to refactor this by consolidating with some of the code in POST
@@ -158,6 +158,7 @@ def view_league(league_id):
 
         round_team_field = f"{current_round}_team" 
         team = getattr(member, round_team_field, None)
+        print(team.D_ST)
         
         for position in ["QB", "RB1", "RB2", "WR1", "WR2", "TE", "FLEX", "K", "D_ST"]:
             player = getattr(team, position, None) if team else None
@@ -165,9 +166,6 @@ def view_league(league_id):
             member_data[position] = player_name
 
         team_data.append(member_data)
-
-    print(league)
-    print(team_data)
 
     return render_template(
         "view_league.html",

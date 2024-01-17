@@ -13,7 +13,7 @@ class SelectTeamForm(Form):
     TE = SelectField("TE")
     FLEX = SelectField("FLEX")
     K = SelectField("K")
-    D_ST = SelectField("D/ST")
+    D_ST = SelectField("D_ST")
 
     # TODO: (very low prio) write a better custom validator a la
     # https://wtforms.readthedocs.io/en/2.3.x/validators/#custom-validators
