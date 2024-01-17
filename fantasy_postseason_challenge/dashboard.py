@@ -124,7 +124,7 @@ def select_team(league_id):
     if league:
         for member in league.member_list:
             if member.account.id == current_user.id:
-                current_team = getattr(member, f'week_{week}_team', None)
+                current_team = getattr(member, f'{current_round}_team', None)
                 if current_team:
                     form.QB.default = current_team.QB.id
                     form.RB1.default = current_team.RB1.id
