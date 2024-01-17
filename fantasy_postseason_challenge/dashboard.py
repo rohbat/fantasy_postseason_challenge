@@ -164,7 +164,6 @@ def view_league(league_id):
 
         round_team_field = f"{current_round}_team" 
         team = getattr(member, round_team_field, None)
-        print(team.D_ST)
         
         for position in ["QB", "RB1", "RB2", "WR1", "WR2", "TE", "FLEX", "K", "D_ST"]:
             player = getattr(team, position, None) if team else None
