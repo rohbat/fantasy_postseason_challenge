@@ -56,3 +56,15 @@ a.btn {
 .leauge-teams {
     /* background-color: white; */
 }
+  
+  /* Custom Button Styles */
+.custom-button {
+    background-color: #013220; /* Dark Forest Green */
+    color: white;
+    border: none;
+}
+
+.custom-button:hover, .custom-button:active {
+    background-color: #024731; /* Slightly lighter green for hover/active */
+    color: white;
+}

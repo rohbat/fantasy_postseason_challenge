@@ -23,7 +23,7 @@ GAMES = {
     },
 }
 
-
+PLAYOFF_TEAMS = ['BAL', 'HOU', 'KC', 'BUF', 'GB', 'SF', 'DET','TB']
 
 class Config:
     SECRET_KEY = os.getenv('FLASK_SECRET_KEY', 'default_secret_key')

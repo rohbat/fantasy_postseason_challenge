@@ -14,9 +14,7 @@
   <body>
     <div class="main-wrapper">
       <h1>{{league.league_name}}</h1>
-      <a href="{{url_for('dashboard.logged_in_homepage')}}">Go back</a>
-      <a href="{{url_for('dashboard.select_team', league_id=league.id)}}">Select your team</a>
-
+      
       {% with messages = get_flashed_messages() %}
         {% if messages %}
           {% for message in messages %}
@@ -57,7 +55,10 @@
         </tbody>
     </table>
 
-      <br><br>
+    <a href="{{url_for('dashboard.logged_in_homepage')}}" class="btn custom-button">Go back</a>
+    <a href="{{url_for('dashboard.select_team', league_id=league.id)}}" class="btn custom-button">Edit your team</a>
+
+    <br><br>
 
     </div>
   </body>

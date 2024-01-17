@@ -12,6 +12,8 @@ from .utilities import is_round_locked
 from .db import db
 from bson.dbref import DBRef
 
+from .config import PLAYOFF_TEAMS
+
 from bson.objectid import ObjectId
 
 from datetime import datetime
@@ -78,6 +80,10 @@ def select_team(league_id):
                 else:
                     flash(f"Player with ID {player_id} not found.")
                     return redirect(url_for("dashboard.select_team", league_id=league_id))
+
+        if not form.validate_week_2():
+            flash("Validation failed: Ensure that you select one player per team for 7 teams, and two players from the last team, with a total of 9 unique players.")
+            return redirect(url_for("dashboard.select_team", league_id=league_id))
         else:
             # Proceed with saving the team based on the current round
             league = try_get_league_by_id(league_id)
@@ -110,14 +116,14 @@ def select_team(league_id):
     ks = sorted(Player.objects(position='PK'), key=lambda x: (x.team, x.games_started), reverse=True)
     d_sts = sorted(Player.objects(position='D/ST'), key=lambda x: (x.team, x.games_started), reverse=True)
 
-    form.QB.choices = [(qb.id, f"{qb.display_name} ({qb.team})") for qb in qbs]
-    form.RB1.choices = form.RB2.choices = [(rb.id, f"{rb.display_name} ({rb.team})") for rb in rbs]
-    form.WR1.choices = form.WR2.choices = [(wr.id, f"{wr.display_name} ({wr.team})") for wr in wrs]
-    form.TE.choices = [(te.id, f"{te.display_name} ({te.team})") for te in tes]
-    form.FLEX.choices = [(flex.id, f"{flex.display_name} ({flex.team})") for flex in sorted(rbs + wrs + tes, key=lambda x: (x.team, x.games_started), reverse=True)]
+    form.QB.choices = [(qb.id, f"{qb.display_name} ({qb.team})") for qb in qbs if qb.team in PLAYOFF_TEAMS]
+    form.RB1.choices = form.RB2.choices = [(rb.id, f"{rb.display_name} ({rb.team})") for rb in rbs if rb.team in PLAYOFF_TEAMS]
+    form.WR1.choices = form.WR2.choices = [(wr.id, f"{wr.display_name} ({wr.team})") for wr in wrs if wr.team in PLAYOFF_TEAMS]
+    form.TE.choices = [(te.id, f"{te.display_name} ({te.team})") for te in tes if te.team in PLAYOFF_TEAMS]
+    form.FLEX.choices = [(flex.id, f"{flex.display_name} ({flex.team})") for flex in sorted(rbs + wrs + tes, key=lambda x: (x.team, x.games_started), reverse=True) if flex.team in PLAYOFF_TEAMS]
     # form.K.choices = [(k.id, k.display_name) for k in ks]
-    form.K.choices = [(k['id'], f"{k['display_name']} ({k['team']})") for k in ks]
-    form.D_ST.choices = [(d_st.id, d_st.display_name) for d_st in d_sts]
+    form.K.choices = [(k['id'], f"{k['display_name']} ({k['team']})") for k in ks if k['team'] in PLAYOFF_TEAMS]
+    form.D_ST.choices = [(d_st.id, d_st.display_name) for d_st in d_sts if d_st.team in PLAYOFF_TEAMS]
 
     # TODO: Might be able to refactor this by consolidating with some of the code in POST
     league = try_get_league_by_id(league_id)

@@ -36,6 +36,7 @@ headers = {
 }
 
 PLAYOFF_TEAMS = ['BAL', 'HOU', 'KC', 'BUF', 'GB', 'SF', 'DET','TB']
+
 desired_positions = {"QB", "WR", "TE", "RB", "PK"}
 
 # Function to get filtered team roster
