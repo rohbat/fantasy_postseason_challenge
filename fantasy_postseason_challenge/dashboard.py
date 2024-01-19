@@ -176,7 +176,10 @@ def view_league(league_id):
                 round_score = player.playoff_scores.get('wildcard')
                 player_score = 0
                 if round_score:
-                    player_score = round_score[league.ruleset]
+                    if league.rulset=='half-ppr':
+                        player_score = round_score['half_ppr']
+                    else: 
+                        player_score = round_score[league.ruleset]
                 fantasy_stats = {
                     'player': player_name,
                     'score': player_score,
