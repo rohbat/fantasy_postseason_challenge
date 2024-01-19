@@ -11,7 +11,7 @@ MONGODB_HOST = f"mongodb+srv://thepaulonascimento:{os.getenv('MONGO_DB_PW')}@pos
 GAMES = {
     'wildcard': {
         'start_time': datetime(2024, 1, 15, 13, 5, tzinfo=tz.UTC), 
-        'game_ids': []
+        'game_ids': ['20240113_CLE@HOU', '20240113_MIA@KC', '20240114_GB@DAL', '20240114_LAR@DET', '20240115_PIT@BUF', '20240115_PHI@TB']
     },
     'divisional': {
         'start_time': datetime(2024, 1, 20, 13, 5, tzinfo=tz.UTC), 

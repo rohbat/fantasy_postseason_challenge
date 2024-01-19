@@ -1,37 +1,31 @@
-<html>
-    <head>
-        <title>Select Team</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="{{url_for('static', filename='bootstrap.min.css')}}" rel="stylesheet" media="screen">
-        <link href="{{url_for('static', filename='main.css')}}" rel="stylesheet" media="screen">
-    </head>
-    <body>
-        <div class="main-wrapper">
-            <h1>Select team for the Divisional Round!</h1><br>
-            <h3>Choose players from Packers @ 49ers, Texans @ Ravens, Buccaneers @ Lions, and Chiefs @ Bills</h3>
-            <h4>You must select one player from each team playing this weekend. One team will have 2 players on your roster.</h4><br>
+{% extends 'base.html' %}
 
-            <form action="" method="POST" class="select-players">
-                <table>
-                    <tbody>
-                        {% for field in form %}
-                            <tr>
-                                <th>{{field.label}}:</th><td>{{field}}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                <br>
-                <input type="submit" value="Submit">
-            </form>
+{% block content %}
+    <div class="main-wrapper">
+        <h1>Select team for the Divisional Round!</h1><br>
+        <h3>Choose players from Packers @ 49ers, Texans @ Ravens, Buccaneers @ Lions, and Chiefs @ Bills</h3>
+        <h4>You must select one player from each team playing this weekend. One team will have 2 players on your roster.</h4><br>
 
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    {% for message in messages %}
-                        {{message}}<br>
+        <form action="" method="POST" class="select-players">
+            <table>
+                <tbody>
+                    {% for field in form %}
+                        <tr>
+                            <th>{{field.label}}:</th><td>{{field}}</td>
+                        </tr>
                     {% endfor %}
-                {% endif %}
-            {% endwith %}
-        </div>
-    </body>
-</html>
+                </tbody>
+            </table>
+            <br>
+            <input type="submit" value="Submit">
+        </form>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    {{message}}<br>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+{% endblock %}

@@ -1,72 +1,74 @@
-<html>
-  <head>
-    <title>League</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="{{url_for('static', filename='bootstrap.min.css')}}" rel="stylesheet" media="screen">
-    <link href="{{url_for('static', filename='main.css')}}" rel="stylesheet" media="screen">
-    <style>
-      table, th, td {
-        border: 1px solid black;
-      }
-    </style>
-  </head>
+{% extends 'base.html' %}
 
-  <body>
-    <div class="main-wrapper">
-      <h1>{{league.league_name}}</h1>
+{% block content %}
+  <div class="main-wrapper">
+    <h1>{{league.league_name}}</h1>
+    <h2>Commissioner: {{ league.commissioner.display_name }}</h2>
 
-      <h2>Divisional Matchups:</h2>
+    <h5>Divisional Matchups:</h5>
 
-      <h3>Packers @ 49ers</h3>
-      <h3>Texans @ Ravens</h3>
-      <h3>Buccaneers @ Lions</h3>
-      <h3>Chiefs @ Bills</h3>
-      
-      {% with messages = get_flashed_messages() %}
-        {% if messages %}
-          {% for message in messages %}
-            {{message}}<br>
+    <h6>Packers @ 49ers, Texans @ Ravens, Buccaneers @ Lions, Chiefs @ Bills</h6>
+    
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          {{message}}<br>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}<br>
+
+    <div>
+      <span id="btnWildcard" class="pill-button active">Wildcard</span>
+      <span id="btnDivisional" class="pill-button">Divisional</span>
+      <span id="btnChampionship" class="pill-button">Championship</span>
+    </div>
+
+    <!-- Display for the current round -->
+    <h3>{{ current_round_display }}</h3>
+    
+    <table class="league-teams">
+      <tbody>
+          <!-- Header row for labels -->
+          <tr>
+              <th>Owner Name</th>
+              {% for member in team_data %}
+                  <td>{{ member.owner_name }}</td>
+              {% endfor %}
+          </tr>
+  
+          <tr>
+              <th>Team Name</th>
+              {% for member in team_data %}
+                  <td>{{ member.team_name }}</td>
+              {% endfor %}
+          </tr>
+  
+          <!-- Rows for each position -->
+          {% for position in positions %}
+              <tr>  
+                  <th>
+                    {% if position == "D_ST" %}
+                        D/ST
+                    {% else %}
+                        {{ position }}
+                    {% endif %}
+                  </th>
+                  {% for member in team_data %}
+                    {% if member.lineup[position] %}
+                        <td><span>{{ member.lineup[position].player }}: {{ member.lineup[position].score }} pts</span></td>
+                    {% else %}
+                        <td>N/A</td>
+                    {% endif %}
+                  {% endfor %}
+              </tr>
           {% endfor %}
-        {% endif %}
-      {% endwith %}<br>
-
-      <!-- Display for the current round -->
-      <h3>{{ current_round_display }}</h3>
-      
-      <table class="league-teams">
-        <tbody>
-            <!-- Header row for labels -->
-            <tr>
-                <th>Owner Name</th>
-                {% for member in team_data %}
-                    <td>{{ member.owner_name }}</td>
-                {% endfor %}
-            </tr>
-    
-            <tr>
-                <th>Team Name</th>
-                {% for member in team_data %}
-                    <td>{{ member.team_name }}</td>
-                {% endfor %}
-            </tr>
-    
-            <!-- Rows for each position -->
-            {% for position in positions %}
-                <tr>
-                    <th>{{ position }}</th>
-                    {% for member in team_data %}
-                        <td>{{ member[position] }}</td>
-                    {% endfor %}
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+      </tbody>
+   </table>
 
     <a href="{{url_for('dashboard.logged_in_homepage')}}" class="btn custom-button">Go back</a>
     <a href="{{url_for('dashboard.select_team', league_id=league.id)}}" class="btn custom-button">Edit your team</a>
 
     <br><br>
 
-    </div>
-  </body>
-</html>
+  </div>
+{% endblock %}

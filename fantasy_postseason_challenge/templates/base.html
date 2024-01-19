@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <head>
+        <title>Fantasy Postseason Challenge</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet" media="screen">
+        <link href="{{ url_for('static', filename='main.css') }}" rel="stylesheet" media="screen">
+    </head>
+</head>
+<body>
+    <header>
+        Fantasy Postseason Challenge
+    </header>
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer>
+        © 2024 Fantasy Postseason Challenge. All rights reserved.
+        <br>
+        <a href="https://github.com/rohbat/fantasy_postseason_challenge" target="_blank">GitHub</a>
+    </footer>
+</body>
+</html>

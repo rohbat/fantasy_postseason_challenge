@@ -6,13 +6,14 @@ sys.path.append(parent_dir)
 
 from selenium import webdriver
 from bs4 import BeautifulSoup as bs
-from .config import DevelopmentConfig, ProductionConfig, get_db_alias
+from .config import DevelopmentConfig, ProductionConfig, get_db_alias, GAMES
 from mongoengine import connect
+from .utilities import extract_teams_from_game_id, compute_defensive_fantasy_score
 import configparser
 from dotenv import load_dotenv
 import requests
 import json
-from .classes.player import Player
+from .classes.player import Player, Scores
 import argparse
 from .app import create_app
 
@@ -35,6 +36,7 @@ headers = {
     'X-RapidAPI-Host': ApiHost
 }
 
+#TODO: move to config and put behind GAMES dict
 PLAYOFF_TEAMS = ['BAL', 'HOU', 'KC', 'BUF', 'GB', 'SF', 'DET','TB']
 
 desired_positions = {"QB", "WR", "TE", "RB", "PK"}
@@ -64,8 +66,8 @@ def get_filtered_team_roster(team_abv):
 
     return filtered_roster
 
+#TODO: Refactor
 def grab_scores_for_games(game_ids):
-    positions = ["QB", "RB", "WR", "TE", "PK"]
     for id in game_ids:
         try:
             url = f"{API_URL}/getNFLBoxScore"
@@ -77,12 +79,34 @@ def grab_scores_for_games(game_ids):
                     # Process each player's stats here
                     player_obj = player_stats[index]
                     name = player_obj['longName']
-                    team = player_obj['team']   
+                    team = player_obj['team']
 
                     if player_obj.get('fantasyPointsDefault') is not None:
-                        points = player_obj['fantasyPointsDefault']['PPR']
-                        if points != '0.0':
-                            print(f"{name}, {team}: {points} pts")
+                        existing_player = Player.objects(name=name, team=team).first()
+                        if existing_player:
+                            fpoints = player_obj['fantasyPointsDefault']
+                            scores = Scores(standard = fpoints['standard'],
+                                            half_ppr = fpoints['halfPPR'],
+                                            ppr = fpoints['PPR'])
+
+                            #TODO: replace with code grabbing current round
+                            existing_player.playoff_scores["wildcard"] = scores
+                            existing_player.save()
+                            print(f"Updated db record for {name}")
+                dst_scores = data['body']['DST']
+                for score in dst_scores:
+                    team_score = dst_scores[score]
+                    abv = team_score['teamAbv']
+                    team_defense = f"{abv} D/ST"
+
+                    defense_in_db = Player.objects(name=team_defense, team=abv).first()
+                    computed = compute_defensive_fantasy_score(team_score)
+                    tosave = Scores(standard=computed,half_ppr=computed,ppr=computed)
+
+                    #TODO: replace with code grabbing current round
+                    defense_in_db.playoff_scores["wildcard"] = tosave
+                    defense_in_db.save()
+                    print(f"Saved {team_score['teamAbv']} D/ST: {compute_defensive_fantasy_score(team_score)} pts")
             else:
                 print(f"Failed to fetch data for game ID {id}. Status code: {response.status_code}")
         except requests.RequestException as e:
@@ -145,16 +169,18 @@ if __name__ == "__main__":
     establish_db_connection()
     # Define and parse command line arguments
     parser = argparse.ArgumentParser(description="Run the Fantasy Postseason Challenge script")
-    parser.add_argument('--mode', type=str, default='app', help="Mode to run the script in ('app' or 'script')")
+    parser.add_argument('--mode', type=str, default='app', help="Mode to run the script in ('upload' or 'scores')")
     args = parser.parse_args()
 
     # Check the mode and execute accordingly
     if args.mode == 'upload':
-        print("Running script mode")
+        print("Running DB upload mode")
         upload_all_rosters()
         print("Rosters uploaded to MongoDB")
     elif args.mode == 'scores':
-        grab_scores_for_games(['20240113_CLE@HOU'])
+        #TODO: Update to grab round programmatically
+        game_ids = GAMES['wildcard']['game_ids']
+        grab_scores_for_games(game_ids)
     else:
         # Code to run when mode is 'app' or any other value
         # (e.g., initializing and running the Flask app)

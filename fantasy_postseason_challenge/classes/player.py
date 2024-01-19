@@ -1,12 +1,21 @@
 from ..config import get_db_alias
-from mongoengine import Document, StringField, IntField
+from ..db import db
+from mongoengine import DecimalField, StringField, MapField, IntField
 
-class Player(Document):
+class Scores(db.EmbeddedDocument):
+    # playoff_round = StringField(required=True)
+    standard = DecimalField(precision=2)
+    half_ppr = DecimalField(precision=2)
+    ppr = DecimalField(precision=2)
+
+
+class Player(db.Document):
     name = StringField(required=True)
     team = StringField(required=True)
     position = StringField(required=True)
     display_name = StringField(required=True)
     games_started = IntField(required=True, default=0)
+    playoff_scores = MapField(db.EmbeddedDocumentField(Scores))
     
     def get_display_name(self):
         return '[' + self.team + '] ' + self.name

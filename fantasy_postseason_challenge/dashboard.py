@@ -33,7 +33,8 @@ def logged_in_homepage():
     team_names = []
     for league in league_memberships:
         for member in league.member_list:
-            team_names.append(member.team_name)
+            if member.account.id == current_user.id:
+                team_names.append(member.team_name)
 
     # Find all leagues where the current user is the commissioner
     if league_memberships:
@@ -41,6 +42,7 @@ def logged_in_homepage():
 
     return render_template(
         "logged_in_homepage.html",
+        user=current_user,
         league_memberships=league_memberships,
         team_names=team_names,
         league_commissionerships=league_commissionerships,
@@ -155,9 +157,11 @@ def view_league(league_id):
 
     team_data = []
     for member in league_members:
+        lineup = []
         member_data = {
             'owner_name': User.objects(id=member.account.id).first().display_name,
             'team_name': member.team_name,
+            'lineup': {}
         }
         
         current_round = current_app.CURRENT_ROUND
@@ -168,9 +172,18 @@ def view_league(league_id):
         for position in ["QB", "RB1", "RB2", "WR1", "WR2", "TE", "FLEX", "K", "D_ST"]:
             player = getattr(team, position, None) if team else None
             player_name = player.display_name if player else 'Player not set'
-            member_data[position] = player_name
-
+            round_score = player.playoff_scores.get('wildcard')
+            player_score = 0
+            if round_score:
+                player_score = round_score[league.ruleset]
+            fantasy_stats = {
+                'player': player_name,
+                'score': player_score,
+            }
+            member_data['lineup'][position] = fantasy_stats
         team_data.append(member_data)
+
+    print(team_data)
 
     return render_template(
         "view_league.html",
