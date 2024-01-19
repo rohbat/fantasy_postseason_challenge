@@ -172,15 +172,16 @@ def view_league(league_id):
         for position in ["QB", "RB1", "RB2", "WR1", "WR2", "TE", "FLEX", "K", "D_ST"]:
             player = getattr(team, position, None) if team else None
             player_name = player.display_name if player else 'Player not set'
-            round_score = player.playoff_scores.get('wildcard')
-            player_score = 0
-            if round_score:
-                player_score = round_score[league.ruleset]
-            fantasy_stats = {
-                'player': player_name,
-                'score': player_score,
-            }
-            member_data['lineup'][position] = fantasy_stats
+            if player:
+                round_score = player.playoff_scores.get('wildcard')
+                player_score = 0
+                if round_score:
+                    player_score = round_score[league.ruleset]
+                fantasy_stats = {
+                    'player': player_name,
+                    'score': player_score,
+                }
+                member_data['lineup'][position] = fantasy_stats
         team_data.append(member_data)
 
     print(team_data)
