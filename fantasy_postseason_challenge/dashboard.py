@@ -173,8 +173,9 @@ def view_league(league_id):
             player = getattr(team, position, None) if team else None
             player_name = player.display_name if player else 'Player not set'
             if player:
-                round_score = player.playoff_scores.get('wildcard')
+                round_score = player.playoff_scores.get('divisional')
                 player_score = 0
+                # TODO: fix this quick hack
                 if round_score:
                     if league.ruleset=='half-ppr':
                         player_score = round_score['half_ppr']

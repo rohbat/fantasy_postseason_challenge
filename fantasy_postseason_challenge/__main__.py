@@ -90,7 +90,7 @@ def grab_scores_for_games(game_ids):
                                             ppr = fpoints['PPR'])
 
                             #TODO: replace with code grabbing current round
-                            existing_player.playoff_scores["wildcard"] = scores
+                            existing_player.playoff_scores["divisional"] = scores
                             existing_player.save()
                             print(f"Updated db record for {name}")
                 dst_scores = data['body']['DST']
@@ -104,7 +104,7 @@ def grab_scores_for_games(game_ids):
                     tosave = Scores(standard=computed,half_ppr=computed,ppr=computed)
 
                     #TODO: replace with code grabbing current round
-                    defense_in_db.playoff_scores["wildcard"] = tosave
+                    defense_in_db.playoff_scores["divisional"] = tosave
                     defense_in_db.save()
                     print(f"Saved {team_score['teamAbv']} D/ST: {compute_defensive_fantasy_score(team_score)} pts")
             else:
@@ -179,7 +179,8 @@ if __name__ == "__main__":
         print("Rosters uploaded to MongoDB")
     elif args.mode == 'scores':
         #TODO: Update to grab round programmatically
-        game_ids = GAMES['wildcard']['game_ids']
+        game_ids = ['20240120_HOU@BAL']
+        # game_ids = GAMES['divisional']['game_ids']
         grab_scores_for_games(game_ids)
     else:
         # Code to run when mode is 'app' or any other value
