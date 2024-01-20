@@ -18,8 +18,8 @@
     {% endwith %}<br>
 
     <div>
-      <span id="btnWildcard" class="pill-button active">Wildcard</span>
-      <span id="btnDivisional" class="pill-button">Divisional</span>
+      <span id="btnWildcard" class="pill-button">Wildcard</span>
+      <span id="btnDivisional" class="pill-button active">Divisional</span>
       <span id="btnChampionship" class="pill-button">Championship</span>
     </div>
 
@@ -55,7 +55,10 @@
                   </th>
                   {% for member in team_data %}
                     {% if member.lineup[position] %}
-                        <td><span>{{ member.lineup[position].player }}: {{ member.lineup[position].score }} pts</span></td>
+                        <td>
+                          <span>{{ member.lineup[position].player }}: {{ member.lineup[position].score }} pts</span>
+                          <img class="player-img" src="{{member.lineup[position].url}}">
+                        </td>
                     {% else %}
                         <td>N/A</td>
                     {% endif %}

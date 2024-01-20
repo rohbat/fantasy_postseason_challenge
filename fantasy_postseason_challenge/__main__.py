@@ -118,26 +118,28 @@ def upload_all_rosters():
     all_players_data = []
     for team, roster in all_filtered_rosters.items():
         for player_data in roster:
+            if player_data.get('espnHeadshot') is not None:
+                print(player_data['espnHeadshot'])
             player = Player(
                 name=player_data['espnName'],
                 team=player_data['team'],
                 position=player_data['pos'],
                 display_name=player_data['longName'],
                 games_started=player_data.get('gamesPlayed', 0),
+                headshot_url=player_data['espnHeadshot'] if player_data.get('espnHeadshot') is not None else ''
             )
-            player_dict = {
-                'name': player.name,
-                'team': player.team,
-                'position': player.position,
-                'display_name': player.display_name,
-                'games_started': player.games_started,
-            }
             existing_player = Player.objects(name=player.name, team=player.team).first()
             if existing_player is None:
                 # If the player does not exist, save the new player
                 player.save()
             else:
-                # Optional: Update existing player data if necessary
+                # Otherwise update existing player data
+                existing_player.update(
+                    set__position=player.position,
+                    set__display_name=player.display_name,
+                    set__games_started=player.games_started,
+                    set__headshot_url=player.headshot_url
+                )
                 pass
             all_players_data.append(player_data)
         json_output = json.dumps(all_players_data, indent=4)

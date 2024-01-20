@@ -158,9 +158,11 @@ def view_league(league_id):
     team_data = []
     for member in league_members:
         lineup = []
+        char_limit = 15
+        short_team_name = member.team_name if len(member.team_name) <= 15 else member.team_name[:15] + '...'
         member_data = {
             'owner_name': User.objects(id=member.account.id).first().display_name,
-            'team_name': member.team_name,
+            'team_name': short_team_name,
             'lineup': {}
         }
         
@@ -184,6 +186,7 @@ def view_league(league_id):
                 fantasy_stats = {
                     'player': player_name,
                     'score': player_score,
+                    'url': player.headshot_url
                 }
                 member_data['lineup'][position] = fantasy_stats
         team_data.append(member_data)
