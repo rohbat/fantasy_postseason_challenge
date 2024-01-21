@@ -181,7 +181,7 @@ if __name__ == "__main__":
         print("Rosters uploaded to MongoDB")
     elif args.mode == 'scores':
         #TODO: Update to grab round programmatically
-        game_ids = ['20240120_HOU@BAL', '20240120_GB@SF', '20240120_TB@DET']
+        game_ids = ['20240120_HOU@BAL', '20240120_GB@SF', '20240121_TB@DET']
         # game_ids = GAMES['divisional']['game_ids']
         grab_scores_for_games(game_ids)
     else:
