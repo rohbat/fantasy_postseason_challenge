@@ -56,8 +56,8 @@
                   {% for member in team_data %}
                     {% if member.lineup[position] %}
                         <td>
-                          <span>{{ member.lineup[position].player }}: {{ member.lineup[position].score }} pts</span>
                           <img class="player-img" src="{{member.lineup[position].url}}">
+                          <span>{{ member.lineup[position].player }}: {{ member.lineup[position].score }} pts</span>
                         </td>
                     {% else %}
                         <td>N/A</td>

@@ -53,8 +53,66 @@ a.btn {
     /* right: 0; */
 }
 
-.leauge-teams {
-    /* background-color: white; */
+.league-teams {
+    width: 60%; /* Adjust as needed */
+    margin: 20px auto;
+    border-collapse: collapse;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15); /* subtle shadow for depth */
+    border-spacing: 0;
+}
+
+.league-teams th, .league-teams td {
+    padding: 12px 15px;
+    text-align: center;
+    border-bottom: 1px solid #dddddd;
+    border-right: 1px solid #dddddd;
+}
+
+.league-teams th {
+    color: #333333;
+    font-weight: bold;
+}
+
+.league-teams tr:nth-child(even) {
+    background-color: #38775e; /* Alternating row color for readability */
+}
+
+.league-teams th:last-child, .league-teams td:last-child {
+    border-right: none; /* Removes right border for the last column */
+}
+
+/* Enhancements for Player Images */
+.player-img {
+    max-height: 75px;
+    max-width: 75px;
+    min-height: 75px;
+    min-width: 75px;
+    border-radius: 50%; /* Circular images */
+    border: 2px solid #ddd; /* Subtle border */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.15); /* Soft shadow for depth */
+    /* margin-left:10px; */
+    margin-right:15px;
+}
+
+/* Scrollable Table for Smaller Screens */
+@media screen and (max-width: 768px) {
+    .league-teams {
+        overflow-x: auto;
+        display: block;
+    }
+}
+
+/* General Styling Adjustments */
+body {
+    font-family: Arial, sans-serif; /* Ensuring consistent font */
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.pill-button, .custom-button {
+    font-size: 1em; /* Uniform button text size */
 }
   
   /* Custom Button Styles */
@@ -101,9 +159,4 @@ footer {
 footer a {
     color: white;
     text-decoration: none;
-}
-
-.player-img {
-    max-height: 50px;
-    max-width: 50px;
 }
