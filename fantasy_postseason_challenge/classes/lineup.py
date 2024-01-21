@@ -38,4 +38,4 @@ class Lineup(db.Document):
                 if player_score:
                     total_score += float(player_score)
 
-        return total_score
+        return round(total_score, 2)
