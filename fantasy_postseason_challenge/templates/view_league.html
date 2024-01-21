@@ -65,6 +65,12 @@
                   {% endfor %}
               </tr>
           {% endfor %}
+          <tr>
+            <th>Score:</th>
+            {% for member in team_data %}
+                  <td>{{ member.lineup_score }} points</td>
+            {% endfor %}
+          </tr>
       </tbody>
    </table>
 

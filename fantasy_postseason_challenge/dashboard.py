@@ -163,7 +163,8 @@ def view_league(league_id):
         member_data = {
             'owner_name': User.objects(id=member.account.id).first().display_name,
             'team_name': short_team_name,
-            'lineup': {}
+            'lineup': {},
+            'lineup_score': 0.0
         }
         
         current_round = current_app.CURRENT_ROUND
@@ -189,9 +190,8 @@ def view_league(league_id):
                     'url': player.headshot_url
                 }
                 member_data['lineup'][position] = fantasy_stats
+        member_data['lineup_score'] = team.get_score_by_round(current_round, league.ruleset)
         team_data.append(member_data)
-
-    print(team_data)
 
     return render_template(
         "view_league.html",
