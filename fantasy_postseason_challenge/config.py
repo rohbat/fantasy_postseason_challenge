@@ -15,7 +15,7 @@ GAMES = {
     },
     'divisional': {
         'start_time': datetime(2024, 1, 20, 13, 5, tzinfo=tz.UTC), 
-        'game_ids': ['20240120_GB@SF','20240120_HOU@BAL','20240120_TB@DET','20240120_KC@BUF'] 
+        'game_ids': ['20240120_GB@SF','20240120_HOU@BAL','20240121_TB@DET','20240121_KC@BUF'] 
     },
     'championship': {
         'start_time': datetime(2024, 1, 28, 13, 5, tzinfo=tz.UTC), 
