@@ -90,9 +90,11 @@ def grab_scores_for_games(game_ids):
                                             ppr = fpoints['PPR'])
 
                             #TODO: replace with code grabbing current round
-                            existing_player.playoff_scores["divisional"] = scores
-                            existing_player.save()
-                            print(f"Updated db record for {name}")
+                            if existing_player.position != "PK":
+                                existing_player.playoff_scores["divisional"] = scores
+                                existing_player.save()
+                                print(f"Updated db record for {name}")
+
                 dst_scores = data['body']['DST']
                 for score in dst_scores:
                     team_score = dst_scores[score]
