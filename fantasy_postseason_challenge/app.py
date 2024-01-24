@@ -1,12 +1,14 @@
 import os
-from .db import initialize_db
+
+from flask import Flask
+
+from .blueprints import register_blueprints
 from .config import DevelopmentConfig, ProductionConfig
-from .classes.user import User
+from .db import initialize_db, establish_db_connection
+from .flask_extensions import initialize_extensions
+from .utilities import setup_jinja_env
 
-from flask import Flask, request, redirect
 from flask_login import LoginManager
-
-from urllib.parse import urlparse, urlunparse
 
 def create_app(test_config=None):
     # create and configure the app
@@ -18,37 +20,13 @@ def create_app(test_config=None):
         app.config.from_object(DevelopmentConfig)
 
     initialize_db(app)
+    establish_db_connection()
 
-    login_manager = LoginManager()
-    login_manager.init_app(app)
-    login_manager.login_view = "auth.login"
+    initialize_extensions(app)
 
-    @login_manager.user_loader
-    def load_user(username):
-        return User.objects(username=username).first()
+    register_blueprints(app)
 
-    @app.before_request
-    def redirect_subdomains():
-        """Redirect non-www and www requests to football.<domain>"""
-        urlparts = urlparse(request.url)
-        if urlparts.netloc == 'fantasypostseasonchallenge.com' or urlparts.netloc == 'www.fantasypostseasonchallenge.com':
-            urlparts = urlparts._replace(netloc='football.fantasypostseasonchallenge.com')
-            return redirect(urlunparse(urlparts), code=301)
-        
-    from . import auth, dashboard
-    app.register_blueprint(auth.bp)
-    app.register_blueprint(dashboard.bp)
-
-    app.jinja_env.globals.update(
-        zip=zip,
-        enumerate=enumerate,
-        len=len,
-        list=list,
-        reversed=reversed
-    )
-
-    # EDIT WEEK VALUE HERE
-    app.CURRENT_ROUND = "divisional"
+    setup_jinja_env(app)
 
     return app
 

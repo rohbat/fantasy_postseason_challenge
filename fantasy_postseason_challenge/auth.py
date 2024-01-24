@@ -1,11 +1,7 @@
-from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for
-)
-from flask_login import login_user, login_required, logout_user, current_user
-
-from .classes.user import User
-
-from werkzeug.security import check_password_hash, generate_password_hash
+from flask import Blueprint, flash, redirect, render_template, url_for
+from flask_login import login_required, logout_user, current_user
+from .auth_service import register_user, authenticate_user
+from .forms import LoginForm, RegistrationForm
 
 bp = Blueprint('auth', __name__, url_prefix='/')
 
@@ -18,51 +14,34 @@ def welcome():
 
 @bp.route("/register", methods=("GET", "POST"))
 def register():
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
-        display_name = request.form["display_name"]
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+        display_name = form.display_name.data
 
-        if not (username and password and display_name):
-            flash("username, password and display name required")
-            return render_template("register.html")
-
-        if User.objects(username=username).first():
-            flash(f"Username: \"{username}\" already exists")
-            return render_template("register.html")
-
-        new_user = User(username=username, password_hash=generate_password_hash(password), display_name=display_name)
-        new_user.save()
-        login_user(new_user)
-        return redirect(url_for("dashboard.logged_in_homepage"))
-    return render_template("register.html")
+        success, message = register_user(username, password, display_name)
+        flash(message)
+        if success:
+            return redirect(url_for("dashboard.logged_in_homepage"))
+        
+    return render_template("register.html", form=form)
 
 
 @bp.route("/login", methods=("GET", "POST"))
 def login():
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
+    form = LoginForm()
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
         
-        e = None
-        if not (username and password):
-            e = "username and password required"
-        
-        user = User.objects(username=username).first()
-
-        if not user:
-            e = f"Username: \"{username}\" not found"
-        elif not check_password_hash(user.password_hash, password):
-            e = "Incorrect password"
-
-        if not e:
-            # session.clear()
-            login_user(user)
+        user, message = authenticate_user(username, password)
+        flash(message)
+        print(user)
+        if user:
             return redirect(url_for("dashboard.logged_in_homepage"))
-        else:
-            flash(e)
     
-    return render_template("login.html")
+    return render_template("login.html", form=form)
 
 @bp.route("/logout")
 @login_required

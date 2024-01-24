@@ -1,0 +1,163 @@
+{
+    "ARI": {
+        "icon": "https://loodibee.com/wp-content/uploads/nfl-arizona-cardinals-team-logo-2.png",
+        "primaryColor": "#000000",
+        "secondaryColor": "#000000"
+    },
+    "ATL": {
+        "icon": "https://loodibee.com/wp-content/uploads/nfl-atlanta-falcons-team-logo-2.png",
+        "primaryColor": "#000000",
+        "secondaryColor": "#000000"
+    },
+    "BAL": {
+        "icon": "https://loodibee.com/wp-content/uploads/nfl-baltimore-ravens-team-logo-2.png",
+        "primaryColor": "#000000",
+        "secondaryColor": "#000000"
+    },
+    "BUF": {
+        "icon": "https://loodibee.com/wp-content/uploads/nfl-buffalo-bills-team-logo-2.png",
+        "primaryColor": "#000000",
+        "secondaryColor": "#000000"
+    },
+    "CAR": {
+        "icon": "https://loodibee.com/wp-content/uploads/nfl-carolina-panthers-team-logo-2.png",
+        "primaryColor": "#000000",
+        "secondaryColor": "#000000"
+    },
+    "CHI": {
+        "icon": "https://loodibee.com/wp-content/uploads/nfl-chicago-bears-team-logo-2.png",
+        "primaryColor": "#000000",
+        "secondaryColor": "#000000"
+    },
+    "CIN": {
+        "icon": "https://loodibee.com/wp-content/uploads/nfl-cincinnati-bengals-team-logo-2.png",
+        "primaryColor": "#000000",
+        "secondaryColor": "#000000"
+    },
+    "CLE": {
+        "icon": "https://loodibee.com/wp-content/uploads/nfl-cleveland-browns-team-logo-2.png",
+        "primaryColor": "#000000",
+        "secondaryColor": "#000000"
+    },
+    "DAL": {
+        "icon": "https://loodibee.com/wp-content/uploads/nfl-dallas-cowboys-team-logo-2.png",
+        "primaryColor": "#000000",
+        "secondaryColor": "#000000"
+    },
+    "DEN": {
+        "icon": "https://loodibee.com/wp-content/uploads/nfl-denver-broncos-team-logo-2.png",
+        "primaryColor": "#000000",
+        "secondaryColor": "#000000"
+    },
+    "DET": {
+        "icon": "https://loodibee.com/wp-content/uploads/nfl-detroit-lions-team-logo-2.png",
+        "primaryColor": "#000000",
+        "secondaryColor": "#000000"
+    },
+    "GB": {
+        "icon": "https://loodibee.com/wp-content/uploads/nfl-green-bay-packers-team-logo-2.png",
+        "bgColor": "#203731",
+        "playerColor": "#FFB612",
+        "textColor": "#FFFFFF"
+    },
+    "HOU": {
+        "icon": "https://loodibee.com/wp-content/uploads/nfl-houston-texans-team-logo-2.png",
+        "primaryColor": "#000000",
+        "secondaryColor": "#000000"
+    },
+    "IND": {
+        "icon": "https://loodibee.com/wp-content/uploads/nfl-indianapolis-colts-team-logo-2.png",
+        "primaryColor": "#000000",
+        "secondaryColor": "#000000"
+    },
+    "JAX": {
+        "icon": "https://loodibee.com/wp-content/uploads/nfl-jacksonville-jaguars-team-logo-2.png",
+        "primaryColor": "#000000",
+        "secondaryColor": "#000000"
+    },
+    "KC": {
+        "icon": "https://loodibee.com/wp-content/uploads/nfl-kansas-city-chiefs-team-logo-2.png",
+        "primaryColor": "#E31837",
+        "secondaryColor": "#FFB81C"
+    },
+    "LV": {
+        "icon": "https://loodibee.com/wp-content/uploads/nfl-las-vegas-raiders-team-logo-2.png",
+        "primaryColor": "#000000",
+        "secondaryColor": "#000000"
+    },
+    "LAC": {
+        "icon": "https://loodibee.com/wp-content/uploads/nfl-los-angeles-chargers-team-logo-2.png",
+        "primaryColor": "#000000",
+        "secondaryColor": "#000000"
+    },
+    "LAR": {
+        "icon": "https://loodibee.com/wp-content/uploads/nfl-los-angeles-rams-team-logo-2.png",
+        "primaryColor": "#000000",
+        "secondaryColor": "#000000"
+    },
+    "MIA": {
+        "icon": "https://loodibee.com/wp-content/uploads/nfl-miami-dolphins-team-logo-2.png",
+        "primaryColor": "#000000",
+        "secondaryColor": "#000000"
+    },
+    "MIN": {
+        "icon": "https://loodibee.com/wp-content/uploads/nfl-minnesota-vikings-team-logo-2.png",
+        "primaryColor": "#000000",
+        "secondaryColor": "#000000"
+    },
+    "NE": {
+        "icon": "https://loodibee.com/wp-content/uploads/nfl-new-england-patriots-team-logo-2.png",
+        "primaryColor": "#000000",
+        "secondaryColor": "#000000"
+    },
+    "NO": {
+        "icon": "https://loodibee.com/wp-content/uploads/nfl-new-orleans-saints-team-logo-2.png",
+        "primaryColor": "#000000",
+        "secondaryColor": "#000000"
+    },
+    "NYG": {
+        "icon": "https://loodibee.com/wp-content/uploads/nfl-new-york-giants-team-logo-2.png",
+        "primaryColor": "#000000",
+        "secondaryColor": "#000000"
+    },
+    "NYJ": {
+        "icon": "https://loodibee.com/wp-content/uploads/nfl-new-york-jets-team-logo-2.png",
+        "primaryColor": "#000000",
+        "secondaryColor": "#000000"
+    },
+    "PHI": {
+        "icon": "https://loodibee.com/wp-content/uploads/nfl-philadelphia-eagles-team-logo-2.png",
+        "primaryColor": "#000000",
+        "secondaryColor": "#000000"
+    },
+    "PIT": {
+        "icon": "https://loodibee.com/wp-content/uploads/nfl-pittsburgh-steelers-team-logo-2.png",
+        "primaryColor": "#000000",
+        "secondaryColor": "#000000"
+    },
+    "SF": {
+        "icon": "https://loodibee.com/wp-content/uploads/nfl-san-francisco-49ers-team-logo-2.png",
+        "primaryColor": "#000000",
+        "secondaryColor": "#000000"
+    },
+    "SEA": {
+        "icon": "https://loodibee.com/wp-content/uploads/nfl-seattle-seahawks-team-logo-2.png",
+        "primaryColor": "#000000",
+        "secondaryColor": "#000000"
+    },
+    "TB": {
+        "icon": "https://loodibee.com/wp-content/uploads/nfl-tampa-bay-buccaneers-team-logo-2.png",
+        "primaryColor": "#000000",
+        "secondaryColor": "#000000"
+    },
+    "TEN": {
+        "icon": "https://loodibee.com/wp-content/uploads/nfl-tennessee-titans-team-logo-2.png",
+        "primaryColor": "#000000",
+        "secondaryColor": "#000000"
+    },
+    "WAS": {
+        "icon": "https://loodibee.com/wp-content/uploads/nfl-washington-commanders-logo.png",
+        "primaryColor": "#000000",
+        "secondaryColor": "#000000"
+    }
+}

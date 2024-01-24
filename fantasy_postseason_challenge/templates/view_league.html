@@ -18,35 +18,33 @@
     {% endwith %}<br>
 
     <div>
-      <span id="btnWildcard" class="pill-button">Wildcard</span>
-      <span id="btnDivisional" class="pill-button active">Divisional</span>
-      <span id="btnChampionship" class="pill-button">Championship</span>
+      <span id="btnWildcard" class="pill-button {{ 'active' if current_round == 'wildcard' else '' }}">Wildcard</span>
+      <span id="btnDivisional" class="pill-button {{ 'active' if current_round == 'divisional' else '' }}">Divisional</span>
+      <span id="btnChampionship" class="pill-button {{ 'active' if current_round == 'championship' else '' }}">Championship</span>
     </div>
-
-    <!-- Display for the current round -->
-    <h3>{{ current_round_display }}</h3>
-    
+   
     <table class="league-teams">
       <tbody>
           <!-- Header row for labels -->
-          <tr>
-              <th>Owner Name</th>
+          <tr class="table-header">
+              <th class="score-header-cell"></th>
               {% for member in team_data %}
-                  <td>{{ member.owner_name }}</td>
-              {% endfor %}
-          </tr>
-  
-          <tr>
-              <th>Team Name</th>
-              {% for member in team_data %}
-                  <td>{{ member.team_name }}</td>
+                  <td>
+                    <div class="owner-wrapper">
+                      {% if member.owner_name == leader %}
+                        👑
+                      {% endif %}
+                      <span class="team-name">{{ member.team_name }}</span>
+                      <span class="owner-name">{{ member.owner_name }}</span>
+                    </div>
+                  </td>
               {% endfor %}
           </tr>
   
           <!-- Rows for each position -->
           {% for position in positions %}
               <tr>  
-                  <th>
+                  <th class="position-abv">
                     {% if position == "D_ST" %}
                         D/ST
                     {% else %}
@@ -55,9 +53,13 @@
                   </th>
                   {% for member in team_data %}
                     {% if member.lineup[position] %}
-                        <td>
-                          <img class="player-img" src="{{member.lineup[position].url}}">
-                          <span>{{ member.lineup[position].player }}: {{ member.lineup[position].score }} pts</span>
+                        <td class="player-cell class={{member.lineup[position].team}}" style="background-color:{{member.lineup[position].display_data.primaryColor}};">
+                          <span class="player-img-wrapper">
+                            <img class="player-img" style="background-color:{{member.lineup[position].display_data.secondaryColor}};" src="{{member.lineup[position].url}}">
+                            <span style="color:{{member.lineup[position].display_data.textColor}}">{{ member.lineup[position].player }}: {{ member.lineup[position].score }} pts</span>
+                          </span>
+                          <!-- <img class="team-icon-img" src="{{member.lineup[position].icon_url}}"> -->
+                          <img class="team-icon-img" src="{{member.lineup[position].display_data.icon}}">
                         </td>
                     {% else %}
                         <td>N/A</td>
@@ -65,10 +67,10 @@
                   {% endfor %}
               </tr>
           {% endfor %}
-          <tr>
-            <th>Score:</th>
+          <tr class="table-header">
+            <th class="score-header-cell">Score:</th>
             {% for member in team_data %}
-                  <td>{{ member.lineup_score }} points</td>
+                  <td class="points-display">{{ member.lineup_score }} points</td>
             {% endfor %}
           </tr>
       </tbody>

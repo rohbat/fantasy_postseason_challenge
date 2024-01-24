@@ -1,3 +1,5 @@
+/* ===== App Styles ======= */
+
 .main-wrapper {
     display: flex;
     flex-direction: column;
@@ -6,11 +8,15 @@
 }
 
 body {
-    background-color: #55ab88
+    background-color: #55ab88;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 h1 {
-    /* align-self: center; */
     font-size: 4.5vw;
     font-weight: 500;
     color: white;
@@ -36,86 +42,30 @@ a.btn {
     margin-left: 15px;
 }
 
-/* ===== consider moving this to a separate CSS file ======= */
-/* Login Page Styles */
-
-.login-submit {
-    margin: 10 auto;
-    display: block;
-}
-
-.select-players {
-    position: relative;
-}
-
-.select-players select {
-    /* position: absolute; */
-    /* right: 0; */
-}
-
-.league-teams {
-    width: 60%; /* Adjust as needed */
-    margin: 20px auto;
-    border-collapse: collapse;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15); /* subtle shadow for depth */
-    border-spacing: 0;
-}
-
-.league-teams th, .league-teams td {
-    padding: 12px 15px;
-    text-align: center;
-    border-bottom: 1px solid #dddddd;
-    border-right: 1px solid #dddddd;
-}
-
-.league-teams th {
-    color: #333333;
-    font-weight: bold;
-}
-
-.league-teams tr:nth-child(even) {
-    background-color: #38775e; /* Alternating row color for readability */
-}
-
-.league-teams th:last-child, .league-teams td:last-child {
-    border-right: none; /* Removes right border for the last column */
-}
-
-/* Enhancements for Player Images */
-.player-img {
-    max-height: 75px;
-    max-width: 75px;
-    min-height: 75px;
-    min-width: 75px;
-    border-radius: 50%; /* Circular images */
-    border: 2px solid #ddd; /* Subtle border */
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.15); /* Soft shadow for depth */
-    /* margin-left:10px; */
-    margin-right:15px;
-}
-
-/* Scrollable Table for Smaller Screens */
-@media screen and (max-width: 768px) {
-    .league-teams {
-        overflow-x: auto;
-        display: block;
-    }
-}
-
-/* General Styling Adjustments */
-body {
-    font-family: Arial, sans-serif; /* Ensuring consistent font */
-}
-
-h1, h2, h3, h4, h5, h6 {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
 .pill-button, .custom-button {
     font-size: 1em; /* Uniform button text size */
 }
   
-  /* Custom Button Styles */
+header {
+    background-color: black;
+    color: white;
+    padding: 10px 0;
+    text-align: center;
+    font-size: 24px;
+}
+footer {
+    margin-top: 30px;
+    min-height: 200px;
+    background-color: black;
+    color: white;
+    padding: 20px 0;
+    text-align: center;
+}
+footer a {
+    color: white;
+    text-decoration: none;
+}
+
 .custom-button {
     background-color: #013220; /* Dark Forest Green */
     color: white;
@@ -141,22 +91,131 @@ h1, h2, h3, h4, h5, h6 {
     color: white;
 }
 
-header {
-    background-color: black;
-    color: white;
-    padding: 10px 0;
-    text-align: center;
-    font-size: 24px;
+
+/* ===== Login Page Styles ======= */
+
+.login-submit {
+    margin: 10 auto;
+    display: block;
 }
-footer {
-    margin-top: 30px;
-    min-height: 200px;
-    background-color: black;
-    color: white;
-    padding: 20px 0;
-    text-align: center;
+
+/* ===== Select Team Styles ======= */
+
+.select-players {
+    position: relative;
 }
-footer a {
-    color: white;
-    text-decoration: none;
+
+/* ===== View League Styles ======= */
+
+.league-teams {
+    width: 60%; /* Adjust as needed */
+    margin: 20px auto;
+    border-collapse: collapse;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15); /* subtle shadow for depth */
+    border-spacing: 0;
+}
+
+.league-teams th, .league-teams td {
+    padding: 12px 15px;
+    text-align: center;
+    border-bottom: 1px solid #dddddd;
+    border-right: 1px solid #dddddd;
+}
+
+.league-teams th {
+    color: #333333;
+    font-weight: bold;
+    width:12%;
+}
+
+.league-teams tr:nth-child(even) {
+    background-color: #38775e; /* Alternating row color for readability */
+}
+
+.league-teams tr {
+    height:100px;
+}
+
+.league-teams th:last-child, .league-teams td:last-child {
+    border-right: none; /* Removes right border for the last column */
+}
+
+/* Scrollable Table for Smaller Screens */
+@media screen and (max-width: 768px) {
+    .league-teams {
+        overflow-x: auto;
+        display: block;
+    }
+}
+
+.table-header {
+    background-color: #808080;
+}
+
+.position-abv {
+    font-size: 20px;
+    background-color: #b8b8b8;
+}
+
+tr:nth-child(even) .position-abv {
+    background-color: #808080;
+}
+
+.owner-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.team-name {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.player-img-wrapper {
+    position: absolute;
+    left: 30px;
+    top: 10px;
+}
+
+.player-img {
+    max-height: 75px;
+    max-width: 75px;
+    min-height: 75px;
+    min-width: 75px;
+    border-radius: 50%; /* Circular images */
+    border: 4px solid #ddd; /* Subtle border */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.15); /* Soft shadow for depth */
+    margin-right:15px;
+    position: relative;
+    z-index: 1; 
+}
+
+.player-cell {
+    position: relative;
+    overflow:hidden;
+}
+
+.team-icon-img {
+    position: absolute;
+    height: 400px;
+    width: 400px;
+    top: -128%;
+    right: -31%;
+    bottom: 2%;   
+    opacity: 0.3;
+    transform: none !important;
+    transition: transform 0s !important;
+}
+
+.score-header-cell {
+    font-size: 20px;
+    background-color: #b8b8b8;
+}
+
+.top-left {
+    background-color: #b8b8b8;
+}
+
+.points-display {
+    font-size: 30px;
 }

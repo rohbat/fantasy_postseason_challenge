@@ -2,15 +2,19 @@ from .config import GAMES
 from datetime import datetime
 from dateutil import tz
 
+def setup_jinja_env(app):
+    app.jinja_env.globals.update(
+        zip=zip,
+        enumerate=enumerate,
+        len=len,
+        list=list,
+        reversed=reversed
+    )
+
 def is_round_locked(round_name):
     current_time = datetime.now(tz.UTC)
     round_start_time = GAMES.get(round_name)['start_time']
     return current_time > round_start_time if round_start_time else False
-
-def extract_teams_from_game_id(game_id):
-    _, teams = game_id.split('_')
-    away_team, home_team = teams.split('@')
-    return {'away': away_team, 'home': home_team}
 
 def calculate_points_from_yds_allowed(yards):
     if yards < 100:
@@ -64,4 +68,15 @@ def compute_defensive_fantasy_score(score_obj):
     deftd_points = defensive_touchdowns * 6
 
     return turnover_points + deftd_points + yds_pts + pt_pts
+
+def top_scoring_owner(member_data):
+    highest_score = 0.0
+    owner_with_highest_score = ""
+
+    for member in member_data:
+        if member['lineup_score'] > highest_score:
+            highest_score = member['lineup_score']
+            owner_with_highest_score = member['owner_name']
+        
+    return owner_with_highest_score
 

@@ -1,4 +1,5 @@
 import os
+
 from datetime import datetime
 from dateutil import tz
 from dotenv import load_dotenv
@@ -11,19 +12,25 @@ MONGODB_HOST = f"mongodb+srv://thepaulonascimento:{os.getenv('MONGO_DB_PW')}@pos
 GAMES = {
     'wildcard': {
         'start_time': datetime(2024, 1, 15, 13, 5, tzinfo=tz.UTC), 
-        'game_ids': ['20240113_CLE@HOU', '20240113_MIA@KC', '20240114_GB@DAL', '20240114_LAR@DET', '20240115_PIT@BUF', '20240115_PHI@TB']
+        'game_ids': ['20240113_CLE@HOU', '20240113_MIA@KC', '20240114_GB@DAL', '20240114_LAR@DET', '20240115_PIT@BUF', '20240115_PHI@TB'],
+        'playoff_teams': ['CLE', 'HOU', 'KC', 'BUF', 'GB', 'MIA', 'DET', 'TB', 'PHI', 'LAR']
     },
     'divisional': {
         'start_time': datetime(2024, 1, 20, 13, 5, tzinfo=tz.UTC), 
-        'game_ids': ['20240120_GB@SF','20240120_HOU@BAL','20240121_TB@DET','20240121_KC@BUF'] 
+        'game_ids': ['20240120_GB@SF','20240120_HOU@BAL','20240121_TB@DET','20240121_KC@BUF'],
+        'playoff_teams': ['BAL', 'HOU', 'KC', 'BUF', 'GB', 'SF', 'DET', 'TB']
     },
     'championship': {
         'start_time': datetime(2024, 1, 28, 13, 5, tzinfo=tz.UTC), 
-        'game_ids': []
+        'game_ids': ['20240128_KC@BAL', '20240128_DET@SF'],
+        'playoff_teams': ['BAL', 'KC', 'SF', 'DET']
     },
 }
 
-PLAYOFF_TEAMS = ['BAL', 'HOU', 'KC', 'BUF', 'GB', 'SF', 'DET','TB']
+PLAYOFF_TEAMS = ['BAL', 'HOU', 'KC', 'BUF', 'GB', 'SF', 'DET', 'TB']
+
+# CHANGE THIS TO UPDATE ROUND
+CURRENT_ROUND = 'divisional'
 
 class Config:
     SECRET_KEY = os.getenv('FLASK_SECRET_KEY', 'default_secret_key')

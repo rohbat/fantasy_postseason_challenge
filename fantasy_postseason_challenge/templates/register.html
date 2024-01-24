@@ -4,22 +4,65 @@
     <div class="main-wrapper">
         <h1>Register</h1>
         <form action="" method="post">
-            <label for="username">Username: </label><br>
-            <input type="text" id="username" name="username"><br>
-            <label for="display_name">Your name: </label><br>
-            <input type="text" id="display_name" name="display_name"><br>
-            <label for="password">Password: </label><br>
-            <input type="password" id="password" name="password"><br>
-            <input class="login-submit" type="submit" id="submit" name="submit">
+            {{ form.hidden_tag() }}
+            <div>
+                {{ form.username.label }}<br>
+                {{ form.username(size=32) }}
+                {% if form.username.errors %}
+                    <ul class="errors">
+                        {% for error in form.username.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            <div>
+                {{ form.display_name.label }}<br>
+                {{ form.display_name(size=32) }}
+                {% if form.display_name.errors %}
+                    <ul class="errors">
+                        {% for error in form.display_name.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            <div>
+                {{ form.password.label }}<br>
+                {{ form.password(size=32) }}
+                {% if form.password.errors %}
+                    <ul class="errors">
+                        {% for error in form.password.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            <div>
+                {{ form.confirm.label }}<br>
+                {{ form.confirm(size=32) }}
+                {% if form.confirm.errors %}
+                    <ul class="errors">
+                        {% for error in form.confirm.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            <div>
+                <input class="login-submit" type="submit" value="Register">
+            </div>
         </form><br>
 
-        <a class="btn btn-primary" href="{{url_for('auth.login')}}">Login</a><br>
+        <a class="btn btn-primary" href="{{ url_for('auth.login') }}">Login</a><br>
 
         {% with messages = get_flashed_messages() %}
             {% if messages %}
-                {% for message in messages %}
-                    {{message}}<br>
-                {% endfor %}
+                <div class="flash-messages">
+                    {% for message in messages %}
+                        <div>{{ message }}</div>
+                    {% endfor %}
+                </div>
             {% endif %}
         {% endwith %}
     </div>
