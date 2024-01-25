@@ -109,7 +109,7 @@ footer a {
 /* ===== View League Styles ======= */
 
 .league-teams {
-    width: 60%; /* Adjust as needed */
+    width: 90%; /* Adjust as needed */
     margin: 20px auto;
     border-collapse: collapse;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15); /* subtle shadow for depth */
@@ -134,7 +134,7 @@ footer a {
 }
 
 .league-teams tr {
-    height:100px;
+    height:125px;
 }
 
 .league-teams th:last-child, .league-teams td:last-child {

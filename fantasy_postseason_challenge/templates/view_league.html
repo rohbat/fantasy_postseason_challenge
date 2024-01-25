@@ -62,7 +62,9 @@
                         <td class="player-cell class={{member.lineup[position].team}}" style="background-color:{{member.lineup[position].display_data.primaryColor}};">
                           <span class="player-img-wrapper">
                             <img class="player-img" style="background-color:{{member.lineup[position].display_data.secondaryColor}};" src="{{member.lineup[position].url}}">
-                            <span style="color: white">{{ member.lineup[position].player }}: {{ member.lineup[position].score }} pts</span>
+                            <div style="color: white">
+                              {{ member.lineup[position].player }}: {{ member.lineup[position].score }} pts
+                            </div>
                           </span>
                           <!-- <img class="team-icon-img" src="{{member.lineup[position].icon_url}}"> -->
                           <img class="team-icon-img" src="{{member.lineup[position].display_data.icon}}">
