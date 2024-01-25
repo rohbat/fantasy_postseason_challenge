@@ -10,7 +10,7 @@ from .classes.player import Player
 from .forms import SelectTeamForm
 from .utilities import is_round_locked, top_scoring_owner
 
-from .config import PLAYOFF_TEAMS, CURRENT_ROUND
+from .config import CURRENT_ROUND, GAMES
 
 from bson.objectid import ObjectId
 
@@ -84,8 +84,15 @@ def select_team(league_id):
                     flash(f"Player with ID {player_id} not found.")
                     return redirect(url_for("dashboard.select_team", league_id=league_id))
 
-        if not form.validate_week_2():
-            flash("Validation failed: Ensure that you select one player per team for 7 teams, and two players from the last team, with a total of 9 unique players.")
+        validation_method = getattr(form, f'validate_{CURRENT_ROUND}_team', None)
+
+        if not validation_method():
+            if CURRENT_ROUND == 'divisional':
+                flash("Validation failed: Ensure that you select one player per team for 8 teams, and two players from the last team.")
+            elif CURRENT_ROUND == 'championship':
+                flash("Validation failed: Ensure that you select two players per team for 4 teams, and three players from the last team.")
+            else:
+                flash("Validation failed: Ensure that your team consists of players from 9 unique teams.")
             return redirect(url_for("dashboard.select_team", league_id=league_id))
         else:
             # Proceed with saving the team based on the current round
@@ -119,13 +126,15 @@ def select_team(league_id):
     ks = sorted(Player.objects(position='PK'), key=lambda x: (x.team, x.games_started), reverse=True)
     d_sts = sorted(Player.objects(position='D/ST'), key=lambda x: (x.team, x.games_started), reverse=True)
 
-    form.QB.choices = [(qb.id, f"{qb.display_name} ({qb.team})") for qb in qbs if qb.team in PLAYOFF_TEAMS]
-    form.RB1.choices = form.RB2.choices = [(rb.id, f"{rb.display_name} ({rb.team})") for rb in rbs if rb.team in PLAYOFF_TEAMS]
-    form.WR1.choices = form.WR2.choices = [(wr.id, f"{wr.display_name} ({wr.team})") for wr in wrs if wr.team in PLAYOFF_TEAMS]
-    form.TE.choices = [(te.id, f"{te.display_name} ({te.team})") for te in tes if te.team in PLAYOFF_TEAMS]
-    form.FLEX.choices = [(flex.id, f"{flex.display_name} ({flex.team})") for flex in sorted(rbs + wrs + tes, key=lambda x: (x.team, x.games_started), reverse=True) if flex.team in PLAYOFF_TEAMS]
-    form.K.choices = [(k['id'], f"{k['display_name']} ({k['team']})") for k in ks if k['team'] in PLAYOFF_TEAMS]
-    form.D_ST.choices = [(d_st.id, d_st.display_name) for d_st in d_sts if d_st.team in PLAYOFF_TEAMS]
+    team_choices = GAMES[CURRENT_ROUND]['playoff_teams']
+
+    form.QB.choices = [(qb.id, f"{qb.display_name} ({qb.team})") for qb in qbs if qb.team in team_choices]
+    form.RB1.choices = form.RB2.choices = [(rb.id, f"{rb.display_name} ({rb.team})") for rb in rbs if rb.team in team_choices]
+    form.WR1.choices = form.WR2.choices = [(wr.id, f"{wr.display_name} ({wr.team})") for wr in wrs if wr.team in team_choices]
+    form.TE.choices = [(te.id, f"{te.display_name} ({te.team})") for te in tes if te.team in team_choices]
+    form.FLEX.choices = [(flex.id, f"{flex.display_name} ({flex.team})") for flex in sorted(rbs + wrs + tes, key=lambda x: (x.team, x.games_started), reverse=True) if flex.team in team_choices]
+    form.K.choices = [(k['id'], f"{k['display_name']} ({k['team']})") for k in ks if k['team'] in team_choices]
+    form.D_ST.choices = [(d_st.id, d_st.display_name) for d_st in d_sts if d_st.team in team_choices]
 
     # TODO: Might be able to refactor this by consolidating with some of the code in POST
     league = try_get_league_by_id(league_id)
@@ -145,7 +154,7 @@ def select_team(league_id):
                     form.D_ST.default = current_team.D_ST.id
                     form.process()
     
-    return render_template("select_team.html", form=form)
+    return render_template("select_team.html", form=form, current_round=CURRENT_ROUND)
 
 
 @bp.route("/league/<league_id>")
@@ -206,8 +215,6 @@ def view_league(league_id):
 
 
     league_leader = top_scoring_owner(team_data)
-
-    print(league_leader)
 
     return render_template(
         "view_league.html",

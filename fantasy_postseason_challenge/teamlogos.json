@@ -142,8 +142,8 @@
     },
     "SF": {
         "icon": "https://loodibee.com/wp-content/uploads/nfl-san-francisco-49ers-team-logo-2.png",
-        "primaryColor": "#AA0000",
-        "secondaryColor": "#B3995D",
+        "primaryColor": "#B3995D",
+        "secondaryColor": "#AA0000",
         "textColor": "#FFFFFF"
     },
     "SEA": {

@@ -2,16 +2,23 @@
 
 {% block content %}
     <div class="main-wrapper">
-        <h1>Select team for the Divisional Round!</h1><br>
-        <h3>Choose players from Packers @ 49ers, Texans @ Ravens, Buccaneers @ Lions, and Chiefs @ Bills</h3>
-        <h4>You must select one player from each team playing this weekend. One team will have 2 players on your roster.</h4><br>
+        <h1>Select team for the {{current_round | capitalize }} Round!</h1><br>
+        {% if current_round == 'divisional' %}
+            <h3>Choose players from Packers @ 49ers, Texans @ Ravens, Buccaneers @ Lions, and Chiefs @ Bills</h3>
+            <h4>You must select one player from each team playing this weekend. One team will have 2 players on your roster.</h4><br>
+        {% endif %}
+
+        {% if current_round == 'championship' %}
+            <h3>Choose players from Lions @ 49ers and Chiefs @ Ravens</h3>
+            <h4>You must select two players from each team playing this weekend. One team will have 3 players on your roster.</h4><br>
+        {% endif %}
 
         <form action="" method="POST" class="select-players">
             <table>
                 <tbody>
                     {% for field in form %}
                         <tr>
-                            <th>{{field.label}}:</th><td>{{field}}</td>
+                            <th>{{ field.label }}:</th><td>{{ field }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>

@@ -27,10 +27,8 @@ GAMES = {
     },
 }
 
-PLAYOFF_TEAMS = ['BAL', 'HOU', 'KC', 'BUF', 'GB', 'SF', 'DET', 'TB']
-
 # CHANGE THIS TO UPDATE ROUND
-CURRENT_ROUND = 'divisional'
+CURRENT_ROUND = 'championship'
 
 class Config:
     SECRET_KEY = os.getenv('FLASK_SECRET_KEY', 'default_secret_key')

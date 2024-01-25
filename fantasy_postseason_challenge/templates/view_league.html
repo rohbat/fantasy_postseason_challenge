@@ -5,9 +5,15 @@
     <h1>{{league.league_name}}</h1>
     <h2>Commissioner: {{ league.commissioner.display_name }}</h2>
 
-    <h5>Divisional Matchups:</h5>
+    <h5>{{current_round | capitalize }} Matchups:</h5>
 
-    <h6>Packers @ 49ers, Texans @ Ravens, Buccaneers @ Lions, Chiefs @ Bills</h6>
+    {% if current_round == 'divisional' %}
+      <h6>Packers @ 49ers, Texans @ Ravens, Buccaneers @ Lions, Chiefs @ Bills</h6>
+    {% endif %}
+
+    {% if current_round == 'championship' %}
+      <h6>Lions @ 49ers, Chiefs @ Ravens</h6>
+    {% endif %}
     
     {% with messages = get_flashed_messages() %}
       {% if messages %}
@@ -56,7 +62,7 @@
                         <td class="player-cell class={{member.lineup[position].team}}" style="background-color:{{member.lineup[position].display_data.primaryColor}};">
                           <span class="player-img-wrapper">
                             <img class="player-img" style="background-color:{{member.lineup[position].display_data.secondaryColor}};" src="{{member.lineup[position].url}}">
-                            <span style="color:{{member.lineup[position].display_data.textColor}}">{{ member.lineup[position].player }}: {{ member.lineup[position].score }} pts</span>
+                            <span style="color: white">{{ member.lineup[position].player }}: {{ member.lineup[position].score }} pts</span>
                           </span>
                           <!-- <img class="team-icon-img" src="{{member.lineup[position].icon_url}}"> -->
                           <img class="team-icon-img" src="{{member.lineup[position].display_data.icon}}">
@@ -76,9 +82,11 @@
       </tbody>
    </table>
 
-    <a href="{{url_for('dashboard.logged_in_homepage')}}" class="btn custom-button">Go back</a>
-    <a href="{{url_for('dashboard.select_team', league_id=league.id)}}" class="btn custom-button">Edit your team</a>
-
+    <div class="button-wrapper">
+      <a href="{{url_for('dashboard.logged_in_homepage')}}" class="btn custom-button">Go back</a>
+      <a href="{{url_for('dashboard.select_team', league_id=league.id)}}" class="btn custom-button">Edit your team</a>  
+    </div>
+   
     <br><br>
 
   </div>
