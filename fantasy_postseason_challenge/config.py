@@ -22,8 +22,7 @@ GAMES = {
     },
     'championship': {
         'start_time': datetime(2024, 1, 28, 13, 5, tzinfo=tz.UTC), 
-        # 'game_ids': ['20240128_KC@BAL', '20240128_DET@SF'],
-        'game_ids' : ['20240128_KC@BAL'],
+        'game_ids': ['20240128_KC@BAL', '20240128_DET@SF'],
         'playoff_teams': ['BAL', 'KC', 'SF', 'DET']
     },
 }
